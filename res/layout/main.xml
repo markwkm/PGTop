@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<TextView android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:text="@string/hello" />
+	<TextView android:text="Host" android:id="@+id/TextView01"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<EditText android:id="@+id/PGHost" android:layout_width="fill_parent"
+		android:layout_height="wrap_content"></EditText>
+	<TextView android:text="Port" android:id="@+id/TextView02"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<EditText android:id="@+id/PGPort" android:layout_width="fill_parent"
+		android:layout_height="wrap_content"></EditText>
+	<TextView android:text="Database" android:id="@+id/TextView03"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<EditText android:id="@+id/DBName" android:layout_width="fill_parent"
+		android:layout_height="wrap_content"></EditText>
+	<TextView android:text="User" android:id="@+id/TextView04"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<EditText android:id="@+id/PGUser" android:layout_width="fill_parent"
+		android:layout_height="wrap_content"></EditText>
+	<TextView android:text="Password" android:id="@+id/TextView05"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<EditText android:id="@+id/PGPassword" android:layout_width="fill_parent"
+		android:layout_height="wrap_content"></EditText>
+	<Button android:text="Start Monitoring" android:id="@+id/Button01"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 </LinearLayout>
