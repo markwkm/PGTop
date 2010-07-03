@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class PGTop extends Activity {
 	/** Called when the activity is first created. */
@@ -43,7 +44,10 @@ public class PGTop extends Activity {
 				try {
 					Class.forName("org.postgresql.Driver");
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					setContentView(R.layout.main);
+					Toast.makeText(PGTop.this, e.toString(), Toast.LENGTH_LONG)
+							.show();
+					return;
 				}
 
 				String url = "jdbc:postgresql:";
@@ -57,7 +61,8 @@ public class PGTop extends Activity {
 				url += DBName;
 
 				try {
-					Connection conn = DriverManager.getConnection(url, PGUser, PGPassword);
+					Connection conn = DriverManager.getConnection(url, PGUser,
+							PGPassword);
 
 					Statement st = conn.createStatement();
 					ResultSet rs = st
@@ -74,7 +79,10 @@ public class PGTop extends Activity {
 
 					conn.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					setContentView(R.layout.main);
+					Toast.makeText(PGTop.this, e.toString(), Toast.LENGTH_LONG)
+							.show();
+					return;
 				}
 			}
 		});
