@@ -24,6 +24,6 @@
 		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 	<EditText android:id="@+id/PGPassword" android:layout_width="fill_parent"
 		android:layout_height="wrap_content"></EditText>
-	<Button android:text="Start Monitoring" android:id="@+id/Button01"
+	<Button android:text="Start Monitoring" android:id="@+id/start"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 </LinearLayout>
