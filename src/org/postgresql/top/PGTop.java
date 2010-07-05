@@ -46,7 +46,7 @@ public class PGTop extends Activity implements OnClickListener {
 		editor.putString("pgpassword", pgPassword);
 		editor.commit();
 
-		Intent myIntent = new Intent(view.getContext(), StatDisplay.class);
+		Intent myIntent = new Intent(view.getContext(), PGStatDatabase.class);
 		startActivityForResult(myIntent, 0);
 	}
 

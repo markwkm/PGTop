@@ -18,7 +18,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class StatDisplay extends Activity implements OnClickListener, Runnable {
+public class PGStatDatabase extends Activity implements OnClickListener,
+		Runnable {
 	private String pgDatabase;
 	private String url;
 	private String pgUser;
@@ -47,7 +48,7 @@ public class StatDisplay extends Activity implements OnClickListener, Runnable {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.display);
+		setContentView(R.layout.pg_stat_database);
 
 		state = State.RUNNING;
 
@@ -57,8 +58,9 @@ public class StatDisplay extends Activity implements OnClickListener, Runnable {
 		try {
 			Class.forName("org.postgresql.Driver");
 		} catch (ClassNotFoundException e) {
-			Toast.makeText(StatDisplay.this, e.toString(), Toast.LENGTH_LONG)
-					.show();
+			Toast
+					.makeText(PGStatDatabase.this, e.toString(),
+							Toast.LENGTH_LONG).show();
 			return;
 		}
 
@@ -128,11 +130,11 @@ public class StatDisplay extends Activity implements OnClickListener, Runnable {
 				// FIXME: Make the refresh rate a configuration parameter.
 				Thread.sleep(2000);
 			} catch (SQLException e) {
-				Toast.makeText(StatDisplay.this, e.toString(),
+				Toast.makeText(PGStatDatabase.this, e.toString(),
 						Toast.LENGTH_LONG).show();
 				return;
 			} catch (InterruptedException e) {
-				Toast.makeText(StatDisplay.this, e.toString(),
+				Toast.makeText(PGStatDatabase.this, e.toString(),
 						Toast.LENGTH_LONG).show();
 				return;
 			}
