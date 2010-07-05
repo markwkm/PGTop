@@ -23,6 +23,7 @@ public class PGTop extends Activity implements OnClickListener {
 		String pgUser = pguserEditText.getText().toString();
 		String pgPassword = pgpasswordEditText.getText().toString();
 
+		/* Build the JDBC connection string. */
 		String url = "jdbc:postgresql:";
 		if (pgHost.length() > 0) {
 			url += "//" + pgHost;
@@ -33,6 +34,10 @@ public class PGTop extends Activity implements OnClickListener {
 		}
 		url += pgDatabase;
 
+		/*
+		 * Save the database connection variables to be used by StatDisplay
+		 * class.
+		 */
 		SharedPreferences preferences = getSharedPreferences("PGTopPrefs", 0);
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putString("pgdatabase", pgDatabase);

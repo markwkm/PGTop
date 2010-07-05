@@ -100,6 +100,10 @@ public class StatDisplay extends Activity implements OnClickListener, Runnable {
 	}
 
 	public void run() {
+		/*
+		 * Loop to refresh the display of database statistics. Open and close a
+		 * connection on each loop.
+		 */
 		while (state == State.RUNNING) {
 			try {
 				Connection conn;
