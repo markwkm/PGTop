@@ -4,7 +4,25 @@
 	android:layout_height="fill_parent">
 	<TextView android:id="@+id/displayheader"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-	<TextView android:id="@+id/connections" android:layout_width="wrap_content"
+	<TextView android:id="@+id/numbackends" android:layout_width="wrap_content"
+		android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/xact_commit" android:layout_width="wrap_content"
+		android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/xact_rollback"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/blks_read" android:layout_width="wrap_content"
+		android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/blks_hit" android:layout_width="wrap_content"
+		android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/tup_returned" android:layout_width="wrap_content"
+		android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/tup_fetched" android:layout_width="wrap_content"
+		android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/tup_inserted" android:layout_width="wrap_content"
+		android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/tup_updated" android:layout_width="wrap_content"
+		android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/tup_deleted" android:layout_width="wrap_content"
 		android:layout_height="wrap_content"></TextView>
 	<Button android:text="Monitor Another Database" android:id="@+id/stop"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
