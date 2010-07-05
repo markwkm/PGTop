@@ -12,14 +12,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class PGStatDatabase extends Activity implements OnClickListener,
-		Runnable {
+public class PGStatDatabase extends Activity implements Runnable {
 	private String pgDatabase;
 	private String url;
 	private String pgUser;
@@ -125,21 +124,12 @@ public class PGStatDatabase extends Activity implements OnClickListener,
 		conn.close();
 	}
 
-	public void onClick(View view) {
-		Intent intent = new Intent();
-		setResult(RESULT_OK, intent);
-		finish();
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pg_stat_database);
 
 		state = State.RUNNING;
-
-		final Button stopButton = (Button) findViewById(R.id.stop);
-		stopButton.setOnClickListener(this);
 
 		try {
 			Class.forName("org.postgresql.Driver");
@@ -150,11 +140,11 @@ public class PGStatDatabase extends Activity implements OnClickListener,
 			return;
 		}
 
-		SharedPreferences settings = getSharedPreferences("PGTopPrefs", 0);
-		pgDatabase = settings.getString("pgdatabase", "");
-		url = settings.getString("pgurl", "");
-		pgUser = settings.getString("pguser", "");
-		pgPassword = settings.getString("pgpassword", "");
+		SharedPreferences preferences = getSharedPreferences("PGTopPrefs", 0);
+		pgDatabase = preferences.getString("pgdatabase", "");
+		url = preferences.getString("pgurl", "");
+		pgUser = preferences.getString("pguser", "");
+		pgPassword = preferences.getString("pgpassword", "");
 
 		headerTextView = (TextView) findViewById(R.id.displayheader);
 		numbackendsTextView = (TextView) findViewById(R.id.numbackends);
@@ -172,9 +162,29 @@ public class PGStatDatabase extends Activity implements OnClickListener,
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu, menu);
+		return true;
+	}
+
+	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		state = State.EXITING;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.stop:
+			Intent intent = new Intent();
+			setResult(RESULT_OK, intent);
+			finish();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override
