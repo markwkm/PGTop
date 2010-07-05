@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.postgresql.top.PGTop.State;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -62,10 +64,6 @@ public class PGStatDatabase extends Activity implements Runnable {
 	private String hitPretty;
 
 	Thread thread;
-
-	private enum State {
-		RUNNING, PAUSED, EXITING
-	};
 
 	private State state;
 

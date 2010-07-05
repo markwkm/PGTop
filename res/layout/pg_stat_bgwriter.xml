@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<TextView android:id="@+id/displayheader"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/checkpoints_timed"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/checkpoints_req"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/buffers_checkpoint"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/buffers_clean"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/maxwritten_clean"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/buffers_backend"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:id="@+id/buffers_alloc"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+</LinearLayout>

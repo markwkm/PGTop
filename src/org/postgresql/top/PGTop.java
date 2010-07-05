@@ -13,6 +13,11 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class PGTop extends Activity implements OnClickListener {
+
+	public enum State {
+		RUNNING, PAUSED, EXITING
+	};
+
 	public void onClick(View view) {
 		final EditText pghostEditText = (EditText) findViewById(R.id.pghost);
 		final EditText pgportEditText = (EditText) findViewById(R.id.pgport);
@@ -49,7 +54,15 @@ public class PGTop extends Activity implements OnClickListener {
 		editor.putString("pgpassword", pgPassword);
 		editor.commit();
 
-		Intent myIntent = new Intent(view.getContext(), PGStatDatabase.class);
+		Intent myIntent = null;
+		switch (view.getId()) {
+		case R.id.database:
+			myIntent = new Intent(view.getContext(), PGStatDatabase.class);
+			break;
+		case R.id.bgwriter:
+			myIntent = new Intent(view.getContext(), PGStatBgwriter.class);
+			break;
+		}
 		startActivityForResult(myIntent, 0);
 	}
 
@@ -59,8 +72,10 @@ public class PGTop extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		final Button startButton = (Button) findViewById(R.id.start);
-		startButton.setOnClickListener(this);
+		final Button databaseButton = (Button) findViewById(R.id.database);
+		databaseButton.setOnClickListener(this);
+		final Button bgwriterButton = (Button) findViewById(R.id.bgwriter);
+		bgwriterButton.setOnClickListener(this);
 	}
 
 	@Override

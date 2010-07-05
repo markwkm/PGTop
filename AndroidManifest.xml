@@ -9,6 +9,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		<activity android:name=".PGStatBgwriter"></activity>
 		<activity android:name=".PGStatDatabase"></activity>
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
