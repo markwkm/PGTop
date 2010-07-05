@@ -19,10 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class StatDisplay extends Activity implements OnClickListener, Runnable {
-	private String DBName;
+	private String pgDatabase;
 	private String url;
-	private String PGUser;
-	private String PGPassword;
+	private String pgUser;
+	private String pgPassword;
 
 	private TextView headerTextView;
 	private TextView connectionsTextView;
@@ -63,10 +63,10 @@ public class StatDisplay extends Activity implements OnClickListener, Runnable {
 		}
 
 		SharedPreferences settings = getSharedPreferences("PGTopPrefs", 0);
-		DBName = settings.getString("dbname", "");
+		pgDatabase = settings.getString("pgdatabase", "");
 		url = settings.getString("pgurl", "");
-		PGUser = settings.getString("pguser", "");
-		PGPassword = settings.getString("pgpassword", "");
+		pgUser = settings.getString("pguser", "");
+		pgPassword = settings.getString("pgpassword", "");
 
 		headerTextView = (TextView) findViewById(R.id.displayheader);
 		connectionsTextView = (TextView) findViewById(R.id.connections);
@@ -106,14 +106,14 @@ public class StatDisplay extends Activity implements OnClickListener, Runnable {
 				Statement st;
 				ResultSet rs;
 
-				conn = DriverManager.getConnection(url, PGUser, PGPassword);
+				conn = DriverManager.getConnection(url, pgUser, pgPassword);
 
 				st = conn.createStatement();
 				rs = st
 						.executeQuery("SELECT NOW(), numbackends FROM pg_stat_database WHERE datname = '"
-								+ DBName + "'");
+								+ pgDatabase + "'");
 				if (rs.next()) {
-					headerString = DBName + " " + rs.getString(1);
+					headerString = pgDatabase + " " + rs.getString(1);
 					backendString = "Database Connections: " + rs.getString(2);
 				}
 				rs.close();

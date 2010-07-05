@@ -10,31 +10,31 @@
 			<TextView android:text="Host:" android:id="@+id/TextView01"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:width="120px"></TextView>
-			<EditText android:id="@+id/host" android:layout_width="fill_parent"
+			<EditText android:id="@+id/pghost" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:width="180px"></EditText>
 		</TableRow>
 		<TableRow>
 			<TextView android:text="Port:" android:id="@+id/TextView02"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-			<EditText android:id="@+id/port" android:layout_width="fill_parent"
+			<EditText android:id="@+id/pgport" android:layout_width="fill_parent"
 				android:layout_height="wrap_content"></EditText>
 		</TableRow>
 		<TableRow>
 			<TextView android:text="Database:" android:id="@+id/TextView03"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-			<EditText android:id="@+id/dbname" android:layout_width="fill_parent"
+			<EditText android:id="@+id/pgdatabase" android:layout_width="fill_parent"
 				android:layout_height="wrap_content"></EditText>
 		</TableRow>
 		<TableRow>
 			<TextView android:text="User:" android:id="@+id/TextView04"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-			<EditText android:id="@+id/user" android:layout_width="fill_parent"
+			<EditText android:id="@+id/pguser" android:layout_width="fill_parent"
 				android:layout_height="wrap_content"></EditText>
 		</TableRow>
 		<TableRow>
 			<TextView android:text="Password:" android:id="@+id/TextView05"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-			<EditText android:id="@+id/password" android:layout_width="fill_parent"
+			<EditText android:id="@+id/pgpassword" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:password="true"></EditText>
 		</TableRow>
 		<TableRow>

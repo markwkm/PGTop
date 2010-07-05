@@ -11,34 +11,34 @@ import android.widget.EditText;
 
 public class PGTop extends Activity implements OnClickListener {
 	public void onClick(View view) {
-		final EditText hostEditText = (EditText) findViewById(R.id.host);
-		final EditText portEditText = (EditText) findViewById(R.id.port);
-		final EditText dbnameEditText = (EditText) findViewById(R.id.dbname);
-		final EditText userEditText = (EditText) findViewById(R.id.user);
-		final EditText passwordEditText = (EditText) findViewById(R.id.password);
+		final EditText pghostEditText = (EditText) findViewById(R.id.pghost);
+		final EditText pgportEditText = (EditText) findViewById(R.id.pgport);
+		final EditText pgdatabaseEditText = (EditText) findViewById(R.id.pgdatabase);
+		final EditText pguserEditText = (EditText) findViewById(R.id.pguser);
+		final EditText pgpasswordEditText = (EditText) findViewById(R.id.pgpassword);
 
-		String PGHost = hostEditText.getText().toString();
-		String PGPort = portEditText.getText().toString();
-		String DBName = dbnameEditText.getText().toString();
-		String PGUser = userEditText.getText().toString();
-		String PGPassword = passwordEditText.getText().toString();
+		String pgHost = pghostEditText.getText().toString();
+		String pgPort = pgportEditText.getText().toString();
+		String pgDatabase = pgdatabaseEditText.getText().toString();
+		String pgUser = pguserEditText.getText().toString();
+		String pgPassword = pgpasswordEditText.getText().toString();
 
 		String url = "jdbc:postgresql:";
-		if (PGHost.length() > 0) {
-			url += "//" + PGHost;
-			if (PGPort.length() > 0) {
-				url += ":" + PGPort;
+		if (pgHost.length() > 0) {
+			url += "//" + pgHost;
+			if (pgPort.length() > 0) {
+				url += ":" + pgPort;
 			}
 			url += "/";
 		}
-		url += DBName;
+		url += pgDatabase;
 
 		SharedPreferences preferences = getSharedPreferences("PGTopPrefs", 0);
 		SharedPreferences.Editor editor = preferences.edit();
-		editor.putString("dbname", DBName);
+		editor.putString("pgdatabase", pgDatabase);
 		editor.putString("pgurl", url);
-		editor.putString("pguser", PGUser);
-		editor.putString("pgpassword", PGPassword);
+		editor.putString("pguser", pgUser);
+		editor.putString("pgpassword", pgPassword);
 		editor.commit();
 
 		Intent myIntent = new Intent(view.getContext(), StatDisplay.class);
