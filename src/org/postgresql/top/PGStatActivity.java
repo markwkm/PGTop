@@ -80,6 +80,7 @@ public class PGStatActivity extends Activity implements Runnable {
 		 * only query for SQL running against the database we're currently
 		 * connected to.
 		 */
+		// FIXME: Use named parameters.
 		sql = "" + "SELECT NOW() - query_start, current_query "
 				+ "FROM pg_stat_activity "
 				+ "WHERE datname = '" + pgDatabase + "' "

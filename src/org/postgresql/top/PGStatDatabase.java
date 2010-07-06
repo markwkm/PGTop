@@ -72,6 +72,7 @@ public class PGStatDatabase extends Activity implements Runnable {
 		Statement st;
 		ResultSet rs;
 
+		// FIXME: Use named parameters.
 		String sql = ""
 				+ "SELECT NOW(), numbackends, xact_commit, xact_rollback, "
 				+ "          blks_read, blks_hit, tup_returned, tup_fetched, "
