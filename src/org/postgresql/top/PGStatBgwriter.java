@@ -128,7 +128,7 @@ public class PGStatBgwriter extends Activity implements Runnable {
 
 		thread = new Thread(this);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();

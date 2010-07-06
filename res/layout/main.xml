@@ -1,34 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-	<TextView android:id="@+id/heading" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:text="@string/hello"
-		android:layout_alignParentTop="true" android:layout_alignParentLeft="true" />
-	<TextView android:text="Host:" android:id="@+id/TextView01"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:layout_below="@+id/heading"></TextView>
-	<EditText android:id="@+id/pghost" android:layout_width="fill_parent"
-		android:layout_height="wrap_content"></EditText>
-	<TextView android:text="Port:" android:id="@+id/TextView02"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-	<EditText android:id="@+id/pgport" android:layout_width="fill_parent"
-		android:layout_height="wrap_content"></EditText>
-	<TextView android:text="Database:" android:id="@+id/TextView03"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-	<EditText android:id="@+id/pgdatabase" android:layout_width="fill_parent"
-		android:layout_height="wrap_content"></EditText>
-	<TextView android:text="User:" android:id="@+id/TextView04"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-	<EditText android:id="@+id/pguser" android:layout_width="fill_parent"
-		android:layout_height="wrap_content"></EditText>
-	<TextView android:text="Password:" android:id="@+id/TextView05"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-	<EditText android:id="@+id/pgpassword" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:password="true"></EditText>
-	<Button android:text="Monitor Database Stats" android:id="@+id/database"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
-	<Button android:text="Monitor Background Writer Stats"
-		android:id="@+id/bgwriter" android:layout_width="fill_parent"
-		android:layout_height="wrap_content"></Button>
-</LinearLayout>
+<ScrollView android:id="@+id/widget54" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical" android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<TextView android:id="@+id/heading" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:text="@string/hello"
+			android:layout_alignParentTop="true" android:layout_alignParentLeft="true" />
+		<TextView android:text="Host:" android:id="@+id/TextView01"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_below="@+id/heading"></TextView>
+		<EditText android:id="@+id/pghost" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></EditText>
+		<TextView android:text="Port:" android:id="@+id/TextView02"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<EditText android:id="@+id/pgport" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></EditText>
+		<TextView android:text="Database:" android:id="@+id/TextView03"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<EditText android:id="@+id/pgdatabase" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></EditText>
+		<TextView android:text="User:" android:id="@+id/TextView04"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<EditText android:id="@+id/pguser" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></EditText>
+		<TextView android:text="Password:" android:id="@+id/TextView05"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<EditText android:id="@+id/pgpassword" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:password="true"></EditText>
+		<Button android:text="Monitor Database Stats" android:id="@+id/database"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
+		<Button android:text="Monitor Background Writer Stats"
+			android:id="@+id/bgwriter" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></Button>
+		<Button android:text="Monitor Activity" android:id="@+id/activity"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
+	</LinearLayout>
+</ScrollView>

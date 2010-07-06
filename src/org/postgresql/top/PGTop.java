@@ -56,6 +56,9 @@ public class PGTop extends Activity implements OnClickListener {
 
 		Intent myIntent = null;
 		switch (view.getId()) {
+		case R.id.activity:
+			myIntent = new Intent(view.getContext(), PGStatActivity.class);
+			break;
 		case R.id.database:
 			myIntent = new Intent(view.getContext(), PGStatDatabase.class);
 			break;
@@ -72,10 +75,12 @@ public class PGTop extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		final Button databaseButton = (Button) findViewById(R.id.database);
-		databaseButton.setOnClickListener(this);
+		final Button activityButton = (Button) findViewById(R.id.activity);
+		activityButton.setOnClickListener(this);
 		final Button bgwriterButton = (Button) findViewById(R.id.bgwriter);
 		bgwriterButton.setOnClickListener(this);
+		final Button databaseButton = (Button) findViewById(R.id.database);
+		databaseButton.setOnClickListener(this);
 	}
 
 	@Override
