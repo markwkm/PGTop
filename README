@@ -1,0 +1,13 @@
+This project was initially started using Eclipse 3.5.2 and r06 of the Android
+SDK.  It was tested uses a PostgreSQL JDBC jar file posted to the PgAndroid
+Google Group by David Cramer on June 9, 2010.
+
+It was developed against PostgreSQL 8.4 and should work on the up coming 9.0
+release.  This app will not work against version 8.2 or older until more care
+is taken to compensate for tables and columns that do not exist prior to 8.4.
+
+When building, the file '.classpath' needs to be modified to include the
+PostgreSQL JDBC jar file that works on the Android platform.  When using
+Eclipse, the jar can be added using the following directions:
+
+http://developer.android.com/guide/appendix/faq/commontasks.html#addexternallibrary
