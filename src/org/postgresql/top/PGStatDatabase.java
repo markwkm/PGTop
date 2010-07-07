@@ -68,7 +68,7 @@ public class PGStatDatabase extends Activity implements Runnable {
 	private State state;
 
 	private void getDatabaseStats() throws SQLException {
-		Connection conn;
+		Connection conn = null;
 		Statement st;
 		ResultSet rs;
 
@@ -87,40 +87,45 @@ public class PGStatDatabase extends Activity implements Runnable {
 				+ "     pg_stat_database "
 				+ "WHERE datname = '" + pgDatabase + "';";
 
-		conn = DriverManager.getConnection(url, pgUser, pgPassword);
+		try {
+			conn = DriverManager.getConnection(url, pgUser, pgPassword);
 
-		st = conn.createStatement();
-		rs = st.executeQuery(sql);
-		if (rs.next()) {
-			/* Save previous values. */
-			commitsOld = commits;
-			rollbacksOld = rollbacks;
-			readOld = read;
-			hitOld = hit;
-			returnedOld = returned;
-			fetchedOld = fetched;
-			insertedOld = inserted;
-			updatedOld = updated;
-			deletedOld = deleted;
+			st = conn.createStatement();
+			rs = st.executeQuery(sql);
+			if (rs.next()) {
+				/* Save previous values. */
+				commitsOld = commits;
+				rollbacksOld = rollbacks;
+				readOld = read;
+				hitOld = hit;
+				returnedOld = returned;
+				fetchedOld = fetched;
+				insertedOld = inserted;
+				updatedOld = updated;
+				deletedOld = deleted;
 
-			/* Get new values. */
-			headerString = pgDatabase + " " + rs.getString(1);
-			numbackends = rs.getLong(2);
-			commits = rs.getLong(3);
-			rollbacks = rs.getLong(4);
-			read = rs.getLong(5);
-			hit = rs.getLong(6);
-			returned = rs.getLong(7);
-			fetched = rs.getLong(8);
-			inserted = rs.getLong(9);
-			updated = rs.getLong(10);
-			deleted = rs.getLong(11);
-			readPretty = rs.getString(12);
-			hitPretty = rs.getString(13);
+				/* Get new values. */
+				headerString = pgDatabase + " " + rs.getString(1);
+				numbackends = rs.getLong(2);
+				commits = rs.getLong(3);
+				rollbacks = rs.getLong(4);
+				read = rs.getLong(5);
+				hit = rs.getLong(6);
+				returned = rs.getLong(7);
+				fetched = rs.getLong(8);
+				inserted = rs.getLong(9);
+				updated = rs.getLong(10);
+				deleted = rs.getLong(11);
+				readPretty = rs.getString(12);
+				hitPretty = rs.getString(13);
+			}
+			rs.close();
+			st.close();
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
 		}
-		rs.close();
-		st.close();
-		conn.close();
 	}
 
 	@Override

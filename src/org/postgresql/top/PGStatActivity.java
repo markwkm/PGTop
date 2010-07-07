@@ -45,62 +45,68 @@ public class PGStatActivity extends Activity implements Runnable {
 	private State state;
 
 	private void getActivityStats() throws SQLException {
-		Connection conn;
+		Connection conn = null;
 		Statement st;
 		ResultSet rs;
 
 		String sql = null;
 
-		conn = DriverManager.getConnection(url, pgUser, pgPassword);
+		try {
+			conn = DriverManager.getConnection(url, pgUser, pgPassword);
 
-		st = conn.createStatement();
+			st = conn.createStatement();
 
-		sql = ""
-				+ "SELECT NOW(), "
-				+ "      (SELECT COUNT(*) "
-				+ "       FROM pg_stat_activity "
-				+ "       WHERE current_query = '<IDLE>') AS idle_connections, "
-				+ "      (SELECT COUNT(*) "
-				+ "       FROM pg_stat_activity "
-				+ "       WHERE current_query = '<IDLE> in transaction') AS idle_transactions, "
-				+ "      (SELECT COUNT(*) "
-				+ "       FROM pg_stat_activity "
-				+ "       WHERE waiting IS TRUE) AS waiting;";
-		rs = st.executeQuery(sql);
-		if (rs.next()) {
-			headerString = pgDatabase + " " + rs.getString(1);
-			idleConnections = rs.getLong(2);
-			idleTransactions = rs.getLong(3);
-			waiting = rs.getLong(4);
+			sql = ""
+					+ "SELECT NOW(), "
+					+ "      (SELECT COUNT(*) "
+					+ "       FROM pg_stat_activity "
+					+ "       WHERE current_query = '<IDLE>') AS idle_connections, "
+					+ "      (SELECT COUNT(*) "
+					+ "       FROM pg_stat_activity "
+					+ "       WHERE current_query = '<IDLE> in transaction') AS idle_transactions, "
+					+ "      (SELECT COUNT(*) "
+					+ "       FROM pg_stat_activity "
+					+ "       WHERE waiting IS TRUE) AS waiting;";
+			rs = st.executeQuery(sql);
+			if (rs.next()) {
+				headerString = pgDatabase + " " + rs.getString(1);
+				idleConnections = rs.getLong(2);
+				idleTransactions = rs.getLong(3);
+				waiting = rs.getLong(4);
+			}
+			rs.close();
+
+			/*
+			 * Don't show this query if it's the only run running on the system,
+			 * and only query for SQL running against the database we're
+			 * currently connected to.
+			 */
+			// FIXME: Use named parameters.
+			sql = ""
+					+ "SELECT NOW() - query_start, current_query "
+					+ "FROM pg_stat_activity "
+					+ "WHERE datname = '" + pgDatabase + "' "
+					+ "  AND current_query <> '<IDLE>' "
+					+ "  AND current_query <> '<IDLE> in transaction' "
+					+ "  AND procpid <> PG_BACKEND_PID() "
+					+ "ORDER BY 1 DESC "
+					+ "LIMIT 1;";
+			rs = st.executeQuery(sql);
+			if (rs.next()) {
+				queryTimeString = rs.getString(1);
+				currentQueryString = rs.getString(2);
+			} else {
+				queryTimeString = "No SQL statements currently running...";
+				currentQueryString = "";
+			}
+			rs.close();
+
+			st.close();
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
 		}
-		rs.close();
-
-		/*
-		 * Don't show this query if it's the only run running on the system, and
-		 * only query for SQL running against the database we're currently
-		 * connected to.
-		 */
-		// FIXME: Use named parameters.
-		sql = "" + "SELECT NOW() - query_start, current_query "
-				+ "FROM pg_stat_activity "
-				+ "WHERE datname = '" + pgDatabase + "' "
-				+ "  AND current_query <> '<IDLE>' "
-				+ "  AND current_query <> '<IDLE> in transaction' "
-				+ "  AND procpid <> PG_BACKEND_PID() "
-				+ "ORDER BY 1 DESC "
-				+ "LIMIT 1;";
-		rs = st.executeQuery(sql);
-		if (rs.next()) {
-			queryTimeString = rs.getString(1);
-			currentQueryString = rs.getString(2);
-		} else {
-			queryTimeString = "No SQL statements currently running...";
-			currentQueryString = "";
-		}
-		rs.close();
-
-		st.close();
-		conn.close();
 	}
 
 	@Override

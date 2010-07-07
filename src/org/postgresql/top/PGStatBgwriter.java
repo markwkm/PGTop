@@ -56,7 +56,7 @@ public class PGStatBgwriter extends Activity implements Runnable {
 	private State state;
 
 	private void getBgwriterStats() throws SQLException {
-		Connection conn;
+		Connection conn = null;
 		Statement st;
 		ResultSet rs;
 
@@ -67,6 +67,7 @@ public class PGStatBgwriter extends Activity implements Runnable {
 				+ "       buffers_alloc "
 				+ "FROM pg_stat_bgwriter;";
 
+		try {
 		conn = DriverManager.getConnection(url, pgUser, pgPassword);
 
 		st = conn.createStatement();
@@ -92,7 +93,11 @@ public class PGStatBgwriter extends Activity implements Runnable {
 		}
 		rs.close();
 		st.close();
-		conn.close();
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
+		}
 	}
 
 	@Override
