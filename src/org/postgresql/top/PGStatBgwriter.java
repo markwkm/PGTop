@@ -55,17 +55,18 @@ public class PGStatBgwriter extends Activity implements Runnable {
 
 	private State state;
 
+
+	private static final String sql = ""
+			+ "SELECT NOW(), checkpoints_timed, checkpoints_req, "
+			+ "       buffers_checkpoint, buffers_clean, "
+			+ "       maxwritten_clean, buffers_backend, "
+			+ "       buffers_alloc "
+			+ "FROM pg_stat_bgwriter;";
+
 	private void getBgwriterStats() throws SQLException {
 		Connection conn = null;
 		Statement st;
 		ResultSet rs;
-
-		String sql = ""
-				+ "SELECT NOW(), checkpoints_timed, checkpoints_req, "
-				+ "       buffers_checkpoint, buffers_clean, "
-				+ "       maxwritten_clean, buffers_backend, "
-				+ "       buffers_alloc "
-				+ "FROM pg_stat_bgwriter;";
 
 		try {
 		conn = DriverManager.getConnection(url, pgUser, pgPassword);
