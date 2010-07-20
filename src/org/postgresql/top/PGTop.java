@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 public class PGTop extends Activity implements OnClickListener {
@@ -24,6 +25,7 @@ public class PGTop extends Activity implements OnClickListener {
 		final EditText pgdatabaseEditText = (EditText) findViewById(R.id.pgdatabase);
 		final EditText pguserEditText = (EditText) findViewById(R.id.pguser);
 		final EditText pgpasswordEditText = (EditText) findViewById(R.id.pgpassword);
+		final CheckBox sslCheckBox = (CheckBox) findViewById(R.id.use_ssl);
 
 		String pgHost = pghostEditText.getText().toString();
 		String pgPort = pgportEditText.getText().toString();
@@ -41,6 +43,10 @@ public class PGTop extends Activity implements OnClickListener {
 			url += "/";
 		}
 		url += pgDatabase;
+
+		if (sslCheckBox.isChecked()) {
+			url += "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
+		}
 
 		/*
 		 * Save the database connection variables to be used by StatDisplay

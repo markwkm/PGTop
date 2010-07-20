@@ -28,6 +28,9 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 		<EditText android:id="@+id/pgpassword" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:password="true"></EditText>
+		<CheckBox android:text="Use SSL" android:id="@+id/use_ssl"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:checked="true"></CheckBox>
 		<Button android:text="Monitor Database Stats" android:id="@+id/database"
 			android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
 		<Button android:text="Monitor Background Writer Stats"
@@ -35,5 +38,5 @@
 			android:layout_height="wrap_content"></Button>
 		<Button android:text="Monitor Activity" android:id="@+id/activity"
 			android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
-	</LinearLayout>
+</LinearLayout>
 </ScrollView>
