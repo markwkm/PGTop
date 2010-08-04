@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.regex.Pattern;
 
 import org.postgresql.top.PGTop.State;
 
@@ -26,7 +27,7 @@ public class PGStatBgwriter extends Activity implements Runnable {
 	private String pgUser;
 	private String pgPassword;
 
-	Thread thread;
+	Thread thread = null;
 
 	private String headerString;
 	private long checkpointsTimed = 0;
@@ -58,6 +59,12 @@ public class PGStatBgwriter extends Activity implements Runnable {
 	private Boolean hasError;
 	private String errorMessage;
 
+	private Connection conn = null;
+	private Statement st;
+	private ResultSet rs;
+
+	private int major, branch;
+
 	private static final String sql = ""
 			+ "SELECT NOW(), checkpoints_timed, checkpoints_req, "
 			+ "       buffers_checkpoint, buffers_clean, "
@@ -66,10 +73,6 @@ public class PGStatBgwriter extends Activity implements Runnable {
 			+ "FROM pg_stat_bgwriter;";
 
 	private void getBgwriterStats() throws SQLException {
-		Connection conn = null;
-		Statement st;
-		ResultSet rs;
-
 		try {
 			conn = DriverManager.getConnection(url, pgUser, pgPassword);
 
@@ -134,7 +137,43 @@ public class PGStatBgwriter extends Activity implements Runnable {
 		buffersBackendTextView = (TextView) findViewById(R.id.buffers_backend);
 		buffersAllocTextView = (TextView) findViewById(R.id.buffers_alloc);
 
-		thread = new Thread(this);
+		try {
+			conn = DriverManager.getConnection(url, pgUser, pgPassword);
+
+			st = conn.createStatement();
+			rs = st.executeQuery("SHOW server_version;");
+
+			if (rs.next()) {
+				Pattern p = Pattern.compile("\\.");
+				String version[] = p.split(rs.getString(1));
+				major = Integer.parseInt(version[0]);
+				branch = Integer.parseInt(version[1]);
+			}
+			rs.close();
+			st.close();
+		} catch (SQLException e) {
+			Toast
+					.makeText(PGStatBgwriter.this, e.toString(),
+							Toast.LENGTH_LONG).show();
+			return;
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// Nothing to worry about now.
+				}
+			}
+		}
+
+		if (major == 8 && branch < 4) {
+			// This should be all cases older than 8.4, and there will be
+			// nothing to get to display.
+			headerTextView.setText("Not supported in PostgreSQL " + major + "."
+					+ branch);
+		} else {
+			thread = new Thread(this);
+		}
 	}
 
 	@Override
@@ -173,7 +212,8 @@ public class PGStatBgwriter extends Activity implements Runnable {
 	protected void onResume() {
 		super.onResume();
 		state = State.RUNNING;
-		thread.start();
+		if (thread != null)
+			thread.start();
 	}
 
 	@Override

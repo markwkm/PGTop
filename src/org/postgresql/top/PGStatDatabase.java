@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.regex.Pattern;
 
 import org.postgresql.top.PGTop.State;
 
@@ -70,26 +71,15 @@ public class PGStatDatabase extends Activity implements Runnable {
 
 	private State state;
 
+	private Connection conn = null;
+	private Statement st;
+	private ResultSet rs;
+
+	private int major, branch;
+
+	private static String sql;
+
 	private void getDatabaseStats() throws SQLException {
-		Connection conn = null;
-		Statement st;
-		ResultSet rs;
-
-		// FIXME: Use named parameters.
-		String sql = ""
-				+ "SELECT NOW(), numbackends, xact_commit, xact_rollback, "
-				+ "          blks_read, blks_hit, tup_returned, tup_fetched, "
-				+ "          tup_inserted, tup_updated, tup_deleted, "
-				+ "          PG_SIZE_PRETTY((blks_read - "
-				+ Long.toString(readOld) + ") * setting), "
-				+ "          PG_SIZE_PRETTY((blks_hit - "
-				+ Long.toString(hitOld) + ") * setting) "
-				+ "FROM (SELECT setting::BIGINT "
-				+ "      FROM pg_settings "
-				+ "      WHERE name = 'block_size') AS pg_settings, "
-				+ "     pg_stat_database "
-				+ "WHERE datname = '" + pgDatabase + "';";
-
 		try {
 			conn = DriverManager.getConnection(url, pgUser, pgPassword);
 
@@ -164,6 +154,69 @@ public class PGStatDatabase extends Activity implements Runnable {
 		insertedTextView = (TextView) findViewById(R.id.tup_inserted);
 		updatedTextView = (TextView) findViewById(R.id.tup_updated);
 		deletedTextView = (TextView) findViewById(R.id.tup_deleted);
+
+		try {
+			conn = DriverManager.getConnection(url, pgUser, pgPassword);
+
+			st = conn.createStatement();
+			rs = st.executeQuery("SHOW server_version;");
+
+			if (rs.next()) {
+				Pattern p = Pattern.compile("\\.");
+				String version[] = p.split(rs.getString(1));
+				major = Integer.parseInt(version[0]);
+				branch = Integer.parseInt(version[1]);
+			}
+			rs.close();
+			st.close();
+		} catch (SQLException e) {
+			Toast
+					.makeText(PGStatDatabase.this, e.toString(),
+							Toast.LENGTH_LONG).show();
+			return;
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// Nothing to worry about now.
+				}
+			}
+		}
+
+		if (major >= 9 || (major == 8 && branch >= 4)) {
+			// This should be versions 8.4 and newer.
+			// FIXME: Use named parameters.
+			sql = ""
+					+ "SELECT NOW(), numbackends, xact_commit, xact_rollback, "
+					+ "          blks_read, blks_hit, tup_returned, tup_fetched, "
+					+ "          tup_inserted, tup_updated, tup_deleted, "
+					+ "          PG_SIZE_PRETTY((blks_read - "
+					+ Long.toString(readOld) + ") * setting), "
+					+ "          PG_SIZE_PRETTY((blks_hit - "
+					+ Long.toString(hitOld) + ") * setting) "
+					+ "FROM (SELECT setting::BIGINT "
+					+ "      FROM pg_settings "
+					+ "      WHERE name = 'block_size') AS pg_settings, "
+					+ "     pg_stat_database " + "WHERE datname = '"
+					+ pgDatabase + "';";
+		} else {
+			// This should be all cases older than 8.4.
+			// FIXME: Use named parameters.
+			// FIXME: Don't display the data that doesn't exist as oppose to making zeros.
+			sql = ""
+					+ "SELECT NOW(), numbackends, xact_commit, xact_rollback, "
+					+ "          blks_read, blks_hit, 0, 0, 0, 0, 0, "
+					+ "          PG_SIZE_PRETTY((blks_read - "
+					+ Long.toString(readOld) + ") * setting), "
+					+ "          PG_SIZE_PRETTY((blks_hit - "
+					+ Long.toString(hitOld) + ") * setting) "
+					+ "FROM (SELECT setting::BIGINT "
+					+ "      FROM pg_settings "
+					+ "      WHERE name = 'block_size') AS pg_settings, "
+					+ "     pg_stat_database " + "WHERE datname = '"
+					+ pgDatabase + "';";
+		}
 
 		thread = new Thread(this);
 	}
