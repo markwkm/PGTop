@@ -63,6 +63,9 @@ public class PGStatDatabase extends Activity implements Runnable {
 	private String readPretty;
 	private String hitPretty;
 
+	private Boolean hasError;
+	private String errorMessage;
+
 	Thread thread;
 
 	private State state;
@@ -218,18 +221,23 @@ public class PGStatDatabase extends Activity implements Runnable {
 		while (state == State.RUNNING) {
 			try {
 				getDatabaseStats();
+				hasError = false;
+			} catch (SQLException e) {
+				errorMessage = e.toString();
+				hasError = true;
+				state = State.PAUSED;
+			}
 
-				handler.sendEmptyMessage(0);
+			handler.sendEmptyMessage(0);
+
+			try {
 				// FIXME: Make the refresh rate a configuration parameter.
 				Thread.sleep(2000);
-			} catch (SQLException e) {
-				Toast.makeText(PGStatDatabase.this, e.toString(),
-						Toast.LENGTH_LONG).show();
-				return;
 			} catch (InterruptedException e) {
-				Toast.makeText(PGStatDatabase.this, e.toString(),
-						Toast.LENGTH_LONG).show();
-				return;
+				errorMessage = e.toString();
+				hasError = true;
+				handler.sendEmptyMessage(0);
+				state = State.PAUSED;
 			}
 		}
 	}
@@ -238,26 +246,33 @@ public class PGStatDatabase extends Activity implements Runnable {
 		@Override
 		public void handleMessage(Message msg) {
 			headerTextView.setText(headerString);
-			numbackendsTextView.setText("Database Connections: "
-					+ Long.toString(numbackends));
-			commitsTextView.setText("Commits: "
-					+ Long.toString(commits - commitsOld));
-			rollbacksTextView.setText("Rollbacks: "
-					+ Long.toString(rollbacks - rollbacksOld));
-			readTextView.setText("Blocks Read: "
-					+ Long.toString(read - readOld) + " (" + readPretty + ")");
-			hitTextView.setText("Blocks Hit: " + Long.toString(hit - hitOld)
-					+ " (" + hitPretty + ")");
-			returnedTextView.setText("Rows Returned: "
-					+ Long.toString(returned - returnedOld));
-			fetchedTextView.setText("Row Fetched: "
-					+ Long.toString(fetched - fetchedOld));
-			insertedTextView.setText("Rows Inserted: "
-					+ Long.toString(inserted - insertedOld));
-			updatedTextView.setText("Rows Updated: "
-					+ Long.toString(updated - updatedOld));
-			deletedTextView.setText("Rows Deleted: "
-					+ Long.toString(deleted - deletedOld));
+
+			if (hasError) {
+				Toast.makeText(PGStatDatabase.this, errorMessage,
+						Toast.LENGTH_LONG).show();
+			} else {
+				numbackendsTextView.setText("Database Connections: "
+						+ Long.toString(numbackends));
+				commitsTextView.setText("Commits: "
+						+ Long.toString(commits - commitsOld));
+				rollbacksTextView.setText("Rollbacks: "
+						+ Long.toString(rollbacks - rollbacksOld));
+				readTextView.setText("Blocks Read: "
+						+ Long.toString(read - readOld) + " (" + readPretty
+						+ ")");
+				hitTextView.setText("Blocks Hit: "
+						+ Long.toString(hit - hitOld) + " (" + hitPretty + ")");
+				returnedTextView.setText("Rows Returned: "
+						+ Long.toString(returned - returnedOld));
+				fetchedTextView.setText("Row Fetched: "
+						+ Long.toString(fetched - fetchedOld));
+				insertedTextView.setText("Rows Inserted: "
+						+ Long.toString(inserted - insertedOld));
+				updatedTextView.setText("Rows Updated: "
+						+ Long.toString(updated - updatedOld));
+				deletedTextView.setText("Rows Deleted: "
+						+ Long.toString(deleted - deletedOld));
+			}
 		}
 	};
 }

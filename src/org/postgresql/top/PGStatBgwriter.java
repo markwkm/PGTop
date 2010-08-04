@@ -55,6 +55,8 @@ public class PGStatBgwriter extends Activity implements Runnable {
 
 	private State state;
 
+	private Boolean hasError;
+	private String errorMessage;
 
 	private static final String sql = ""
 			+ "SELECT NOW(), checkpoints_timed, checkpoints_req, "
@@ -188,18 +190,23 @@ public class PGStatBgwriter extends Activity implements Runnable {
 		while (state == State.RUNNING) {
 			try {
 				getBgwriterStats();
+				hasError = false;
+			} catch (SQLException e) {
+				errorMessage = e.toString();
+				hasError = true;
+				state = State.PAUSED;
+			}
 
-				handler.sendEmptyMessage(0);
+			handler.sendEmptyMessage(0);
+
+			try {
 				// FIXME: Make the refresh rate a configuration parameter.
 				Thread.sleep(2000);
-			} catch (SQLException e) {
-				Toast.makeText(PGStatBgwriter.this, e.toString(),
-						Toast.LENGTH_LONG).show();
-				return;
 			} catch (InterruptedException e) {
-				Toast.makeText(PGStatBgwriter.this, e.toString(),
-						Toast.LENGTH_LONG).show();
-				return;
+				errorMessage = e.toString();
+				hasError = true;
+				handler.sendEmptyMessage(0);
+				state = State.PAUSED;
 			}
 		}
 	}
@@ -208,20 +215,32 @@ public class PGStatBgwriter extends Activity implements Runnable {
 		@Override
 		public void handleMessage(Message msg) {
 			headerTextView.setText(headerString);
-			checkpointsTimedTextView.setText("Scheduled Checkpoints: "
-					+ Long.toString(checkpointsTimed - checkpointsTimedOld));
-			checkpointsReqTextView.setText("Requested Checkpoints: "
-					+ Long.toString(checkpointsReq - checkpointsReqOld));
-			buffersCheckpointTextView.setText("Buffers Written by Checkpoint: "
-					+ Long.toString(buffersCheckpoint - buffersCheckpointOld));
-			buffersCleanTextView.setText("Buffers Cleaned: "
-					+ Long.toString(buffersClean - buffersCleanOld));
-			maxwrittenCleanTextView.setText("Times Background Writer Stopped: "
-					+ Long.toString(maxwrittenClean - maxwrittenCleanOld));
-			buffersBackendTextView.setText("Buffer Written by Backends: "
-					+ Long.toString(buffersBackend - buffersBackendOld));
-			buffersAllocTextView.setText("Total Buffers Allocated: "
-					+ Long.toString(buffersAlloc));
+
+			if (hasError) {
+				Toast.makeText(PGStatBgwriter.this, errorMessage,
+						Toast.LENGTH_LONG).show();
+			} else {
+				checkpointsTimedTextView
+						.setText("Scheduled Checkpoints: "
+								+ Long.toString(checkpointsTimed
+										- checkpointsTimedOld));
+				checkpointsReqTextView.setText("Requested Checkpoints: "
+						+ Long.toString(checkpointsReq - checkpointsReqOld));
+				buffersCheckpointTextView
+						.setText("Buffers Written by Checkpoint: "
+								+ Long.toString(buffersCheckpoint
+										- buffersCheckpointOld));
+				buffersCleanTextView.setText("Buffers Cleaned: "
+						+ Long.toString(buffersClean - buffersCleanOld));
+				maxwrittenCleanTextView
+						.setText("Times Background Writer Stopped: "
+								+ Long.toString(maxwrittenClean
+										- maxwrittenCleanOld));
+				buffersBackendTextView.setText("Buffer Written by Backends: "
+						+ Long.toString(buffersBackend - buffersBackendOld));
+				buffersAllocTextView.setText("Total Buffers Allocated: "
+						+ Long.toString(buffersAlloc));
+			}
 		}
 	};
 }

@@ -44,6 +44,9 @@ public class PGStatActivity extends Activity implements Runnable {
 
 	private State state;
 
+	private Boolean hasError;
+	private String errorMessage;
+
 	private static final String sql1 = ""
 			+ "SELECT NOW(), "
 			+ "      (SELECT COUNT(*) "
@@ -192,18 +195,23 @@ public class PGStatActivity extends Activity implements Runnable {
 		while (state == State.RUNNING) {
 			try {
 				getActivityStats();
+				hasError = false;
+			} catch (SQLException e) {
+				errorMessage = e.toString();
+				hasError = true;
+				state = State.PAUSED;
+			}
 
-				handler.sendEmptyMessage(0);
+			handler.sendEmptyMessage(0);
+
+			try {
 				// FIXME: Make the refresh rate a configuration parameter.
 				Thread.sleep(2000);
-			} catch (SQLException e) {
-				Toast.makeText(PGStatActivity.this, e.toString(),
-						Toast.LENGTH_LONG).show();
-				return;
 			} catch (InterruptedException e) {
-				Toast.makeText(PGStatActivity.this, e.toString(),
-						Toast.LENGTH_LONG).show();
-				return;
+				errorMessage = e.toString();
+				hasError = true;
+				handler.sendEmptyMessage(0);
+				state = State.PAUSED;
 			}
 		}
 	}
@@ -212,15 +220,21 @@ public class PGStatActivity extends Activity implements Runnable {
 		@Override
 		public void handleMessage(Message msg) {
 			headerTextView.setText(headerString);
-			idleConnectionsTextView.setText("Idle Connections: "
-					+ Long.toString(idleConnections));
-			idleTransactionsTextView.setText("Idle Transactions: "
-					+ Long.toString(idleTransactions));
-			waitingTextView.setText("Connections Waiting: "
-					+ Long.toString(waiting));
-			queryTimeTextView.setText("Longest Running Query: "
-					+ queryTimeString);
-			currentQueryTextView.setText(currentQueryString);
+
+			if (hasError) {
+				Toast.makeText(PGStatActivity.this, errorMessage,
+						Toast.LENGTH_LONG).show();
+			} else {
+				idleConnectionsTextView.setText("Idle Connections: "
+						+ Long.toString(idleConnections));
+				idleTransactionsTextView.setText("Idle Transactions: "
+						+ Long.toString(idleTransactions));
+				waitingTextView.setText("Connections Waiting: "
+						+ Long.toString(waiting));
+				queryTimeTextView.setText("Longest Running Query: "
+						+ queryTimeString);
+				currentQueryTextView.setText(currentQueryString);
+			}
 		}
 	};
 }
