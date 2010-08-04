@@ -71,31 +71,31 @@ public class PGStatBgwriter extends Activity implements Runnable {
 		ResultSet rs;
 
 		try {
-		conn = DriverManager.getConnection(url, pgUser, pgPassword);
+			conn = DriverManager.getConnection(url, pgUser, pgPassword);
 
-		st = conn.createStatement();
-		rs = st.executeQuery(sql);
-		if (rs.next()) {
-			/* Save old values. */
-			checkpointsTimedOld = checkpointsTimed;
-			checkpointsReqOld = checkpointsReq;
-			buffersCheckpointOld = buffersCheckpoint;
-			buffersCleanOld = buffersClean;
-			maxwrittenCleanOld = maxwrittenClean;
-			buffersBackendOld = buffersBackend;
+			st = conn.createStatement();
+			rs = st.executeQuery(sql);
+			if (rs.next()) {
+				/* Save old values. */
+				checkpointsTimedOld = checkpointsTimed;
+				checkpointsReqOld = checkpointsReq;
+				buffersCheckpointOld = buffersCheckpoint;
+				buffersCleanOld = buffersClean;
+				maxwrittenCleanOld = maxwrittenClean;
+				buffersBackendOld = buffersBackend;
 
-			/* Get new values. */
-			headerString = pgDatabase + " " + rs.getString(1);
-			checkpointsTimed = rs.getLong(2);
-			checkpointsReq = rs.getLong(3);
-			buffersCheckpoint = rs.getLong(4);
-			buffersClean = rs.getLong(5);
-			maxwrittenClean = rs.getLong(6);
-			buffersBackend = rs.getLong(7);
-			buffersAlloc = rs.getLong(8);
-		}
-		rs.close();
-		st.close();
+				/* Get new values. */
+				headerString = pgDatabase + " " + rs.getString(1);
+				checkpointsTimed = rs.getLong(2);
+				checkpointsReq = rs.getLong(3);
+				buffersCheckpoint = rs.getLong(4);
+				buffersClean = rs.getLong(5);
+				maxwrittenClean = rs.getLong(6);
+				buffersBackend = rs.getLong(7);
+				buffersAlloc = rs.getLong(8);
+			}
+			rs.close();
+			st.close();
 		} finally {
 			if (conn != null) {
 				conn.close();
