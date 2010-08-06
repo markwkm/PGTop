@@ -166,7 +166,7 @@ public class PGStatBgwriter extends Activity implements Runnable {
 			}
 		}
 
-		if (major == 8 && branch < 4) {
+		if (major == 8 && branch < 3) {
 			// This should be all cases older than 8.4, and there will be
 			// nothing to get to display.
 			headerTextView.setText("Not supported in PostgreSQL " + major + "."
