@@ -5,8 +5,7 @@ SDK.  It was tested uses a PostgreSQL JDBC jar file posted to the PgAndroid
 Google Group by Dave Cramer on June 9, 2010.
 
 It was developed against PostgreSQL 8.4 and should work on the up coming 9.0
-release.  This app will not work against version 8.2 or older until more care
-is taken to compensate for tables and columns that do not exist prior to 8.4.
+release.  It has been tested against 8.3 and 8.2 to some degree.
 
 When building, the file '.classpath' needs to be modified to include the
 PostgreSQL JDBC jar file that works on the Android platform.  When using
