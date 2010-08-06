@@ -67,7 +67,7 @@ public class PGStatDatabase extends Activity implements Runnable {
 	private Boolean hasError;
 	private String errorMessage;
 
-	Thread thread;
+	Thread thread = null;
 
 	private State state;
 
@@ -257,7 +257,8 @@ public class PGStatDatabase extends Activity implements Runnable {
 	protected void onResume() {
 		super.onResume();
 		state = State.RUNNING;
-		thread.start();
+		if (thread != null)
+			thread.start();
 	}
 
 	@Override
