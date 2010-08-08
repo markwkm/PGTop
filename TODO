@@ -4,3 +4,4 @@
 * Add support for pg_proctab to show more system stats.
 * Add preferences options to adjust the refresh rate of the stats displays.
 * Add ability to save database connection information.
+* Follow Android guidelines for making a launcher icon.
