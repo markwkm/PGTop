@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:id="@+id/widget54" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical" android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<TextView android:text="Host:" android:id="@+id/TextView01"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_below="@+id/heading"></TextView>
+		<EditText android:id="@+id/pghost" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></EditText>
+		<TextView android:text="Port:" android:id="@+id/TextView02"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<EditText android:id="@+id/pgport" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></EditText>
+		<TextView android:text="Database:" android:id="@+id/TextView03"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<EditText android:id="@+id/pgdatabase" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></EditText>
+		<TextView android:text="User:" android:id="@+id/TextView04"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<EditText android:id="@+id/pguser" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></EditText>
+		<TextView android:text="Password:" android:id="@+id/TextView05"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<EditText android:id="@+id/pgpassword" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:password="true"></EditText>
+		<CheckBox android:text="Use SSL" android:id="@+id/use_ssl"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:checked="true"></CheckBox>
+		<Button android:text="Save" android:id="@+id/save"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
+	</LinearLayout>
+</ScrollView>

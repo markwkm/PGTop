@@ -1,57 +1,110 @@
 package org.postgresql.top;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 public class PGTop extends Activity implements OnClickListener {
-
 	public enum State {
 		RUNNING, PAUSED, EXITING
 	};
 
+	private Spinner connectionSpinner;
+	private ArrayAdapter<CharSequence> spinnerAdapter;
+
+	private String pgHost;
+	private String pgPort;
+	private String pgDatabase;
+	private String pgUser;
+	private String pgPassword;
+	private int ssl;
+
 	public void onClick(View view) {
-		final EditText pghostEditText = (EditText) findViewById(R.id.pghost);
-		final EditText pgportEditText = (EditText) findViewById(R.id.pgport);
-		final EditText pgdatabaseEditText = (EditText) findViewById(R.id.pgdatabase);
-		final EditText pguserEditText = (EditText) findViewById(R.id.pguser);
-		final EditText pgpasswordEditText = (EditText) findViewById(R.id.pgpassword);
-		final CheckBox sslCheckBox = (CheckBox) findViewById(R.id.use_ssl);
+		String selectedItem = (String) connectionSpinner.getSelectedItem();
 
-		String pgHost = pghostEditText.getText().toString();
-		String pgPort = pgportEditText.getText().toString();
-		String pgDatabase = pgdatabaseEditText.getText().toString();
-		String pgUser = pguserEditText.getText().toString();
-		String pgPassword = pgpasswordEditText.getText().toString();
+		Pattern pattern = Pattern
+				.compile("(.*):(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
+		Matcher matcher = pattern.matcher(selectedItem);
 
-		/* Build the JDBC connection string. */
-		String url = "jdbc:postgresql:";
-		if (pgHost.length() > 0) {
-			url += "//" + pgHost;
-			if (pgPort.length() > 0) {
-				url += ":" + pgPort;
+		if (matcher.find()) {
+			pgHost = matcher.group(1);
+			pgPort = matcher.group(2);
+			pgDatabase = matcher.group(3);
+			pgUser = matcher.group(4);
+			ssl = (matcher.group(5).equals("SSL") ? 1 : 0);
+		} else {
+			pattern = Pattern.compile("(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
+			matcher = pattern.matcher(selectedItem);
+			if (matcher.find()) {
+				pgHost = matcher.group(1);
+				pgPort = "";
+				pgDatabase = matcher.group(2);
+				pgUser = matcher.group(3);
+				ssl = (matcher.group(4).equals("SSL") ? 1 : 0);
+			} else {
+				Toast.makeText(PGTop.this,
+						"Cannot figure out how to remove this connection.",
+						Toast.LENGTH_LONG).show();
+				return;
 			}
-			url += "/";
 		}
+
+		// Build the JDBC connection string.
+		String url = "jdbc:postgresql:";
+
+		url += "//" + pgHost;
+		if (pgPort.length() > 0) {
+			url += ":" + pgPort;
+		}
+		url += "/";
 		url += pgDatabase;
 
-		if (sslCheckBox.isChecked()) {
+		if (ssl == 1) {
 			url += "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
 		}
 
-		/*
-		 * Save the database connection variables to be used by StatDisplay
-		 * class.
-		 */
+		PGConnectionOpenHelper openHelper = new PGConnectionOpenHelper(
+				getApplicationContext());
+		SQLiteDatabase db = openHelper.getReadableDatabase();
+		Cursor c = db.rawQuery("SELECT password FROM "
+				+ PGConnectionOpenHelper.TABLE_NAME + " WHERE host = '"
+				+ pgHost + "' AND port = '" + pgPort + "' AND database = '"
+				+ pgDatabase + "' AND user = '" + pgUser + "' AND ssl = "
+				+ Integer.toString(ssl) + ";", null);
+		// FIXME: Handle the event that more than 1 password comes back. But if
+		// that situation ever occurs, I think it really is the fault of how
+		// data is being inserted into the database.
+		if (c.getCount() > 0) {
+			c.moveToNext();
+			pgPassword = c.getString(0);
+		} else {
+			Toast.makeText(PGTop.this,
+					"Unexplanable problem retrieving database password...",
+					Toast.LENGTH_LONG).show();
+			c.close();
+			db.close();
+			return;
+		}
+		c.close();
+		db.close();
+
+		// Save the database connection variables to be used by StatDisplay
+		// class.
 		SharedPreferences preferences = getSharedPreferences("PGTopPrefs", 0);
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putString("pgdatabase", pgDatabase);
@@ -87,12 +140,17 @@ public class PGTop extends Activity implements OnClickListener {
 		bgwriterButton.setOnClickListener(this);
 		final Button databaseButton = (Button) findViewById(R.id.database);
 		databaseButton.setOnClickListener(this);
+
+		connectionSpinner = (Spinner) findViewById(R.id.connection);
+		connectionSpinner.setPrompt("Choose a connection");
+		spinnerAdapter = new ArrayAdapter<CharSequence>(this,
+				android.R.layout.simple_spinner_item);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.exit, menu);
+		inflater.inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -102,8 +160,19 @@ public class PGTop extends Activity implements OnClickListener {
 		case R.id.exit:
 			System.exit(0);
 			return true;
+		case R.id.settings:
+			startActivityForResult(new Intent(getApplicationContext(),
+					PGSettings.class), 0);
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PGConnectionOpenHelper.populateConnectionSpinner(connectionSpinner,
+				spinnerAdapter, getApplicationContext());
 	}
 }

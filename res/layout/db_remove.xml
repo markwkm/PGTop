@@ -6,11 +6,6 @@
 		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 	<Spinner android:id="@+id/connection" android:layout_width="fill_parent"
 		android:layout_height="wrap_content"></Spinner>
-	<Button android:text="Monitor Database Stats" android:id="@+id/database"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
-	<Button android:text="Monitor Background Writer Stats"
-		android:id="@+id/bgwriter" android:layout_width="fill_parent"
-		android:layout_height="wrap_content"></Button>
-	<Button android:text="Monitor Activity" android:id="@+id/activity"
+	<Button android:text="Remove" android:id="@+id/remove"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
 </LinearLayout>
