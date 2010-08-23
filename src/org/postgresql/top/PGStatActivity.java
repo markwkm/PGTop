@@ -117,20 +117,16 @@ public class PGStatActivity extends Activity implements Runnable {
 		pgUser = preferences.getString("pguser", "");
 		pgPassword = preferences.getString("pgpassword", "");
 
-		/*
-		 * Don't show this query if it's the only run running on the system,
-		 * and only query for SQL running against the database we're
-		 * currently connected to.
-		 */
+		// Don't show this query if it's the only run running on the system,
+		// and only query for SQL running against the database we're
+		// currently connected to.
+
 		// FIXME: Use named parameters.
-		sql2 = ""
-				+ "SELECT NOW() - query_start, current_query "
-				+ "FROM pg_stat_activity "
-				+ "WHERE datname = '" + pgDatabase + "' "
-				+ "  AND current_query <> '<IDLE>' "
+		sql2 = "" + "SELECT NOW() - query_start, current_query "
+				+ "FROM pg_stat_activity " + "WHERE datname = '" + pgDatabase
+				+ "' " + "  AND current_query <> '<IDLE>' "
 				+ "  AND current_query <> '<IDLE> in transaction' "
-				+ "  AND procpid <> PG_BACKEND_PID() "
-				+ "ORDER BY 1 DESC "
+				+ "  AND procpid <> PG_BACKEND_PID() " + "ORDER BY 1 DESC "
 				+ "LIMIT 1;";
 
 		headerTextView = (TextView) findViewById(R.id.displayheader);
@@ -175,6 +171,7 @@ public class PGStatActivity extends Activity implements Runnable {
 		state = State.PAUSED;
 	}
 
+	@Override
 	protected void onResume() {
 		super.onResume();
 		state = State.RUNNING;
@@ -188,10 +185,8 @@ public class PGStatActivity extends Activity implements Runnable {
 	}
 
 	public void run() {
-		/*
-		 * Loop to refresh the display of activity statistics. Open and close a
-		 * connection on each loop.
-		 */
+		// Loop to refresh the display of activity statistics. Open and close a
+		// connection on each loop.
 		while (state == State.RUNNING) {
 			try {
 				getActivityStats();

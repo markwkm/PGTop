@@ -86,7 +86,7 @@ public class PGStatDatabase extends Activity implements Runnable {
 			st = conn.createStatement();
 			rs = st.executeQuery(sql);
 			if (rs.next()) {
-				/* Save previous values. */
+				// Save previous values.
 				commitsOld = commits;
 				rollbacksOld = rollbacks;
 				readOld = read;
@@ -97,7 +97,7 @@ public class PGStatDatabase extends Activity implements Runnable {
 				updatedOld = updated;
 				deletedOld = deleted;
 
-				/* Get new values. */
+				// Get new values.
 				headerString = pgDatabase + " " + rs.getString(1);
 				numbackends = rs.getLong(2);
 				commits = rs.getLong(3);

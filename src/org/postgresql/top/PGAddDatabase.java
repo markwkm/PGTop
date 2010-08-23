@@ -26,18 +26,16 @@ public class PGAddDatabase extends Activity implements OnClickListener {
 					getApplicationContext());
 			SQLiteDatabase db = openHelper.getWritableDatabase();
 			try {
-				db
-						.execSQL("INSERT INTO "
-								+ PGConnectionOpenHelper.TABLE_NAME
-								+ " (host, port, database, user, password, ssl) VALUES ('"
-								+ pghostEditText.getText().toString() + "', '"
-								+ pgportEditText.getText().toString() + "', '"
-								+ pgdatabaseEditText.getText().toString()
-								+ "', '" + pguserEditText.getText().toString()
-								+ "', '"
-								+ pgpasswordEditText.getText().toString()
-								+ "', " + (sslCheckBox.isChecked() ? "1" : "0")
-								+ ");");
+				final String INSERT_CONNECTION = "INSERT INTO "
+						+ PGConnectionOpenHelper.TABLE_NAME
+						+ " (host, port, database, user, password, ssl) "
+						+ "VALUES ('" + pghostEditText.getText().toString()
+						+ "', '" + pgportEditText.getText().toString() + "', '"
+						+ pgdatabaseEditText.getText().toString() + "', '"
+						+ pguserEditText.getText().toString() + "', '"
+						+ pgpasswordEditText.getText().toString() + "', "
+						+ (sslCheckBox.isChecked() ? "1" : "0") + ");";
+				db.execSQL(INSERT_CONNECTION);
 				db.close();
 				finish();
 			} catch (SQLiteConstraintException e) {

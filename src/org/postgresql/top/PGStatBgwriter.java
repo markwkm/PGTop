@@ -69,8 +69,7 @@ public class PGStatBgwriter extends Activity implements Runnable {
 			+ "SELECT NOW(), checkpoints_timed, checkpoints_req, "
 			+ "       buffers_checkpoint, buffers_clean, "
 			+ "       maxwritten_clean, buffers_backend, "
-			+ "       buffers_alloc "
-			+ "FROM pg_stat_bgwriter;";
+			+ "       buffers_alloc " + "FROM pg_stat_bgwriter;";
 
 	private void getBgwriterStats() throws SQLException {
 		try {
@@ -79,7 +78,7 @@ public class PGStatBgwriter extends Activity implements Runnable {
 			st = conn.createStatement();
 			rs = st.executeQuery(sql);
 			if (rs.next()) {
-				/* Save old values. */
+				// Save old values.
 				checkpointsTimedOld = checkpointsTimed;
 				checkpointsReqOld = checkpointsReq;
 				buffersCheckpointOld = buffersCheckpoint;
@@ -87,7 +86,7 @@ public class PGStatBgwriter extends Activity implements Runnable {
 				maxwrittenCleanOld = maxwrittenClean;
 				buffersBackendOld = buffersBackend;
 
-				/* Get new values. */
+				// Get new values.
 				headerString = pgDatabase + " " + rs.getString(1);
 				checkpointsTimed = rs.getLong(2);
 				checkpointsReq = rs.getLong(3);
@@ -223,10 +222,8 @@ public class PGStatBgwriter extends Activity implements Runnable {
 	}
 
 	public void run() {
-		/*
-		 * Loop to refresh the display of background writer statistics. Open and
-		 * close a connection on each loop.
-		 */
+		// Loop to refresh the display of background writer statistics. Open and
+		// close a connection on each loop.
 		while (state == State.RUNNING) {
 			try {
 				getBgwriterStats();

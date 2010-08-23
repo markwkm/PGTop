@@ -58,7 +58,7 @@ public class PGTop extends Activity implements OnClickListener {
 				ssl = (matcher.group(4).equals("SSL") ? 1 : 0);
 			} else {
 				Toast.makeText(PGTop.this,
-						"Cannot figure out how to remove this connection.",
+						"Cannot parse this connection string correctly.",
 						Toast.LENGTH_LONG).show();
 				return;
 			}
@@ -81,11 +81,12 @@ public class PGTop extends Activity implements OnClickListener {
 		PGConnectionOpenHelper openHelper = new PGConnectionOpenHelper(
 				getApplicationContext());
 		SQLiteDatabase db = openHelper.getReadableDatabase();
-		Cursor c = db.rawQuery("SELECT password FROM "
+		final String SELECT_PASSWORD = "SELECT password " + "FROM "
 				+ PGConnectionOpenHelper.TABLE_NAME + " WHERE host = '"
 				+ pgHost + "' AND port = '" + pgPort + "' AND database = '"
 				+ pgDatabase + "' AND user = '" + pgUser + "' AND ssl = "
-				+ Integer.toString(ssl) + ";", null);
+				+ Integer.toString(ssl) + ";";
+		Cursor c = db.rawQuery(SELECT_PASSWORD, null);
 		// FIXME: Handle the event that more than 1 password comes back. But if
 		// that situation ever occurs, I think it really is the fault of how
 		// data is being inserted into the database.

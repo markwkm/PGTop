@@ -59,10 +59,12 @@ public class PGRemoveDatabase extends Activity implements OnClickListener {
 					getApplicationContext());
 			SQLiteDatabase db = openHelper.getWritableDatabase();
 
-			db.execSQL("DELETE FROM " + PGConnectionOpenHelper.TABLE_NAME
-					+ " WHERE host = '" + host + "' AND port = '" + port
-					+ "' AND database = '" + database + "' AND user = '" + user
-					+ "' AND ssl = " + ssl + ";");
+			final String DELETE_CONNECTION = "DELETE FROM "
+					+ PGConnectionOpenHelper.TABLE_NAME + " WHERE host = '"
+					+ host + "' AND port = '" + port + "' AND database = '"
+					+ database + "' AND user = '" + user + "' AND ssl = " + ssl
+					+ ";";
+			db.execSQL(DELETE_CONNECTION);
 			db.close();
 
 			PGConnectionOpenHelper.populateConnectionSpinner(connectionSpinner,
