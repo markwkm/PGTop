@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.postgresql.top.PGTop.State;
@@ -143,10 +144,12 @@ public class PGStatBgwriter extends Activity implements Runnable {
 			rs = st.executeQuery("SHOW server_version;");
 
 			if (rs.next()) {
-				Pattern p = Pattern.compile("\\.");
-				String version[] = p.split(rs.getString(1));
-				major = Integer.parseInt(version[0]);
-				branch = Integer.parseInt(version[1]);
+				final Pattern pattern = Pattern.compile("(\\d+)\\.(\\d+).*");
+				final Matcher matcher = pattern.matcher(rs.getString(1));
+				if (matcher.find()) {
+					major = Integer.parseInt(matcher.group(1));
+					branch = Integer.parseInt(matcher.group(2));
+				}
 			}
 			rs.close();
 			st.close();
