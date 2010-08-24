@@ -80,6 +80,8 @@ public class PGStatDatabase extends Activity implements Runnable {
 
 	private static String sql;
 
+	int refreshRate;
+
 	private void getDatabaseStats() throws SQLException {
 		try {
 			conn = DriverManager.getConnection(url, pgUser, pgPassword);
@@ -144,6 +146,10 @@ public class PGStatDatabase extends Activity implements Runnable {
 		pgUser = preferences.getString("pguser", "");
 		pgPassword = preferences.getString("pgpassword", "");
 
+		preferences = getSharedPreferences(PGTop.PREFS_REFRESH, 0);
+		refreshRate = preferences.getInt(PGTop.KEY_REFRESH,
+				PGTop.DEFAULT_REFRESH) * 1000;
+
 		headerTextView = (TextView) findViewById(R.id.displayheader);
 		numbackendsTextView = (TextView) findViewById(R.id.numbackends);
 		commitsTextView = (TextView) findViewById(R.id.xact_commit);
@@ -206,7 +212,8 @@ public class PGStatDatabase extends Activity implements Runnable {
 		} else {
 			// This should be all cases older than 8.4.
 			// FIXME: Use named parameters.
-			// FIXME: Don't display the data that doesn't exist as oppose to making zeros.
+			// FIXME: Don't display the data that doesn't exist as oppose to
+			// making zeros.
 			sql = ""
 					+ "SELECT NOW(), numbackends, xact_commit, xact_rollback, "
 					+ "          blks_read, blks_hit, 0, 0, 0, 0, 0, "
@@ -288,8 +295,7 @@ public class PGStatDatabase extends Activity implements Runnable {
 			handler.sendEmptyMessage(0);
 
 			try {
-				// FIXME: Make the refresh rate a configuration parameter.
-				Thread.sleep(2000);
+				Thread.sleep(refreshRate);
 			} catch (InterruptedException e) {
 				errorMessage = e.toString();
 				hasError = true;

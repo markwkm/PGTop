@@ -47,6 +47,8 @@ public class PGStatActivity extends Activity implements Runnable {
 	private Boolean hasError;
 	private String errorMessage;
 
+	private int refreshRate;
+
 	private static final String sql1 = ""
 			+ "SELECT NOW(), "
 			+ "      (SELECT COUNT(*) "
@@ -116,6 +118,10 @@ public class PGStatActivity extends Activity implements Runnable {
 		url = preferences.getString("pgurl", "");
 		pgUser = preferences.getString("pguser", "");
 		pgPassword = preferences.getString("pgpassword", "");
+
+		preferences = getSharedPreferences(PGTop.PREFS_REFRESH, 0);
+		refreshRate = preferences.getInt(PGTop.KEY_REFRESH,
+				PGTop.DEFAULT_REFRESH) * 1000;
 
 		// Don't show this query if it's the only run running on the system,
 		// and only query for SQL running against the database we're
@@ -200,8 +206,7 @@ public class PGStatActivity extends Activity implements Runnable {
 			handler.sendEmptyMessage(0);
 
 			try {
-				// FIXME: Make the refresh rate a configuration parameter.
-				Thread.sleep(2000);
+				Thread.sleep(refreshRate);
 			} catch (InterruptedException e) {
 				errorMessage = e.toString();
 				hasError = true;

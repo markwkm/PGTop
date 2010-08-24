@@ -20,6 +20,11 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 public class PGTop extends Activity implements OnClickListener {
+	public static final String PREFS_REFRESH = "RefreshPrefs";
+	public static final String KEY_REFRESH = "RefreshKey";
+
+	public static int DEFAULT_REFRESH = 2;
+
 	public enum State {
 		RUNNING, PAUSED, EXITING
 	};

@@ -2,5 +2,4 @@
 * Put together a list of statistics to show.
 * Document why some statistics won't be shown.
 * Add support for pg_proctab to show more system stats.
-* Add preferences options to adjust the refresh rate of the stats displays.
 * Follow Android guidelines for making a launcher icon.

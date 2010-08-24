@@ -66,6 +66,8 @@ public class PGStatBgwriter extends Activity implements Runnable {
 
 	private int major, branch;
 
+	private int refreshRate;
+
 	private static final String sql = ""
 			+ "SELECT NOW(), checkpoints_timed, checkpoints_req, "
 			+ "       buffers_checkpoint, buffers_clean, "
@@ -127,6 +129,10 @@ public class PGStatBgwriter extends Activity implements Runnable {
 		url = preferences.getString("pgurl", "");
 		pgUser = preferences.getString("pguser", "");
 		pgPassword = preferences.getString("pgpassword", "");
+
+		preferences = getSharedPreferences(PGTop.PREFS_REFRESH, 0);
+		refreshRate = preferences.getInt(PGTop.KEY_REFRESH,
+				PGTop.DEFAULT_REFRESH) * 1000;
 
 		headerTextView = (TextView) findViewById(R.id.displayheader);
 		checkpointsTimedTextView = (TextView) findViewById(R.id.checkpoints_timed);
@@ -240,8 +246,7 @@ public class PGStatBgwriter extends Activity implements Runnable {
 			handler.sendEmptyMessage(0);
 
 			try {
-				// FIXME: Make the refresh rate a configuration parameter.
-				Thread.sleep(2000);
+				Thread.sleep(refreshRate);
 			} catch (InterruptedException e) {
 				errorMessage = e.toString();
 				hasError = true;
