@@ -12,6 +12,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class PGAddDatabase extends Activity implements OnClickListener {
+	private PGConnectionOpenHelper openHelper;
+	private SQLiteDatabase db;
+
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.save:
@@ -22,9 +25,8 @@ public class PGAddDatabase extends Activity implements OnClickListener {
 			final EditText pgpasswordEditText = (EditText) findViewById(R.id.pgpassword);
 			final CheckBox sslCheckBox = (CheckBox) findViewById(R.id.use_ssl);
 
-			PGConnectionOpenHelper openHelper = new PGConnectionOpenHelper(
-					getApplicationContext());
-			SQLiteDatabase db = openHelper.getWritableDatabase();
+			openHelper = new PGConnectionOpenHelper(getApplicationContext());
+			db = openHelper.getWritableDatabase();
 			try {
 				final String INSERT_CONNECTION = "INSERT INTO "
 						+ PGConnectionOpenHelper.TABLE_NAME

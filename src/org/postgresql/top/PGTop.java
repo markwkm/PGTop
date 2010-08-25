@@ -35,12 +35,19 @@ public class PGTop extends Activity implements OnClickListener,
 
 	public static int DEFAULT_REFRESH = 2;
 
-	public enum State {
-		RUNNING, PAUSED, EXITING
-	};
+	public static enum State {
+		RUNNING, PAUSED, EXITING;
+	}
+
+	private Intent myIntent;
 
 	private Spinner connectionSpinner;
 	private ArrayAdapter<CharSequence> connectionAdapter;
+	private String selectedItem;
+
+	private PGConnectionOpenHelper openHelper;
+	private SQLiteDatabase db;
+	private Cursor cursor;
 
 	private String pgHost;
 	private String pgPort;
@@ -48,18 +55,22 @@ public class PGTop extends Activity implements OnClickListener,
 	private String pgUser;
 	private String pgPassword;
 	private int ssl;
+	private String url;
 
 	private SharedPreferences preferences;
-	SharedPreferences.Editor editor;
+	private SharedPreferences.Editor editor;
 	private int connectionPosition;
 
+	private final Pattern pattern1 = Pattern
+			.compile("(.*):(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
+	private final Pattern pattern2 = Pattern
+			.compile("(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
+	private Matcher matcher;
+
 	public void onClick(View view) {
-		String selectedItem = (String) connectionSpinner.getSelectedItem();
+		selectedItem = (String) connectionSpinner.getSelectedItem();
 
-		Pattern pattern = Pattern
-				.compile("(.*):(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
-		Matcher matcher = pattern.matcher(selectedItem);
-
+		matcher = pattern1.matcher(selectedItem);
 		if (matcher.find()) {
 			pgHost = matcher.group(1);
 			pgPort = matcher.group(2);
@@ -67,8 +78,7 @@ public class PGTop extends Activity implements OnClickListener,
 			pgUser = matcher.group(4);
 			ssl = (matcher.group(5).equals("SSL") ? 1 : 0);
 		} else {
-			pattern = Pattern.compile("(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
-			matcher = pattern.matcher(selectedItem);
+			matcher = pattern2.matcher(selectedItem);
 			if (matcher.find()) {
 				pgHost = matcher.group(1);
 				pgPort = "";
@@ -84,7 +94,7 @@ public class PGTop extends Activity implements OnClickListener,
 		}
 
 		// Build the JDBC connection string.
-		String url = "jdbc:postgresql:";
+		url = "jdbc:postgresql:";
 
 		url += "//" + pgHost;
 		if (pgPort.length() > 0) {
@@ -97,30 +107,30 @@ public class PGTop extends Activity implements OnClickListener,
 			url += "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
 		}
 
-		PGConnectionOpenHelper openHelper = new PGConnectionOpenHelper(
-				getApplicationContext());
-		SQLiteDatabase db = openHelper.getReadableDatabase();
+		openHelper = new PGConnectionOpenHelper(getApplicationContext());
+		db = openHelper.getReadableDatabase();
+
 		final String SELECT_PASSWORD = "SELECT password " + "FROM "
 				+ PGConnectionOpenHelper.TABLE_NAME + " WHERE host = '"
 				+ pgHost + "' AND port = '" + pgPort + "' AND database = '"
 				+ pgDatabase + "' AND user = '" + pgUser + "' AND ssl = "
 				+ Integer.toString(ssl) + ";";
-		Cursor c = db.rawQuery(SELECT_PASSWORD, null);
+		cursor = db.rawQuery(SELECT_PASSWORD, null);
 		// FIXME: Handle the event that more than 1 password comes back. But if
 		// that situation ever occurs, I think it really is the fault of how
 		// data is being inserted into the database.
-		if (c.getCount() > 0) {
-			c.moveToNext();
-			pgPassword = c.getString(0);
+		if (cursor.getCount() > 0) {
+			cursor.moveToNext();
+			pgPassword = cursor.getString(0);
 		} else {
 			Toast.makeText(PGTop.this,
 					"Unexplanable problem retrieving database password...",
 					Toast.LENGTH_LONG).show();
-			c.close();
+			cursor.close();
 			db.close();
 			return;
 		}
-		c.close();
+		cursor.close();
 		db.close();
 
 		// Save the database connection variables to be used by StatDisplay
@@ -131,7 +141,7 @@ public class PGTop extends Activity implements OnClickListener,
 		editor.putString(KEY_PGPASSWORD, pgPassword);
 		editor.commit();
 
-		Intent myIntent = null;
+		myIntent = null;
 		switch (view.getId()) {
 		case R.id.activity:
 			myIntent = new Intent(view.getContext(), PGStatActivity.class);
@@ -174,7 +184,7 @@ public class PGTop extends Activity implements OnClickListener,
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
+		final MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 		return true;
 	}

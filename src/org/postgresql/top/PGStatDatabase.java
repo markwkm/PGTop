@@ -23,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class PGStatDatabase extends Activity implements Runnable {
+	private MenuInflater inflater;
+
 	private String pgDatabase;
 	private String url;
 	private String pgUser;
@@ -76,6 +78,8 @@ public class PGStatDatabase extends Activity implements Runnable {
 	private Statement st;
 	private ResultSet rs;
 
+	private final Pattern pattern = Pattern.compile("(\\d+)\\.(\\d+).*");
+	private Matcher matcher;
 	private int major, branch;
 
 	private static String sql;
@@ -169,8 +173,7 @@ public class PGStatDatabase extends Activity implements Runnable {
 			rs = st.executeQuery("SHOW server_version;");
 
 			if (rs.next()) {
-				final Pattern pattern = Pattern.compile("(\\d+)\\.(\\d+).*");
-				final Matcher matcher = pattern.matcher(rs.getString(1));
+				matcher = pattern.matcher(rs.getString(1));
 				if (matcher.find()) {
 					major = Integer.parseInt(matcher.group(1));
 					branch = Integer.parseInt(matcher.group(2));
@@ -233,7 +236,7 @@ public class PGStatDatabase extends Activity implements Runnable {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
+		inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu, menu);
 		return true;
 	}

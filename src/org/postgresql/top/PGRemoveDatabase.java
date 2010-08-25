@@ -17,6 +17,16 @@ public class PGRemoveDatabase extends Activity implements OnClickListener {
 	private Spinner connectionSpinner;
 	private ArrayAdapter<CharSequence> spinnerAdapter;
 
+	private final Pattern pattern1 = Pattern
+			.compile("(.*):(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
+	private final Pattern pattern2 = Pattern
+			.compile("(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
+	private Matcher matcher;
+	private String selectedItem;
+
+	private PGConnectionOpenHelper openHelper;
+	private SQLiteDatabase db;
+
 	private String host;
 	private String port;
 	private String database;
@@ -26,12 +36,9 @@ public class PGRemoveDatabase extends Activity implements OnClickListener {
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.remove:
-			String selectedItem = (String) connectionSpinner.getSelectedItem();
+			selectedItem = (String) connectionSpinner.getSelectedItem();
 
-			Pattern pattern = Pattern
-					.compile("(.*):(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
-			Matcher matcher = pattern.matcher(selectedItem);
-
+			matcher = pattern1.matcher(selectedItem);
 			if (matcher.find()) {
 				host = matcher.group(1);
 				port = matcher.group(2);
@@ -39,8 +46,7 @@ public class PGRemoveDatabase extends Activity implements OnClickListener {
 				user = matcher.group(4);
 				ssl = (matcher.group(5).equals("SSL") ? "1" : "0");
 			} else {
-				pattern = Pattern.compile("(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
-				matcher = pattern.matcher(selectedItem);
+				matcher = pattern2.matcher(selectedItem);
 				if (matcher.find()) {
 					host = matcher.group(1);
 					port = "";
@@ -55,9 +61,8 @@ public class PGRemoveDatabase extends Activity implements OnClickListener {
 				}
 			}
 
-			PGConnectionOpenHelper openHelper = new PGConnectionOpenHelper(
-					getApplicationContext());
-			SQLiteDatabase db = openHelper.getWritableDatabase();
+			openHelper = new PGConnectionOpenHelper(getApplicationContext());
+			db = openHelper.getWritableDatabase();
 
 			final String DELETE_CONNECTION = "DELETE FROM "
 					+ PGConnectionOpenHelper.TABLE_NAME + " WHERE host = '"

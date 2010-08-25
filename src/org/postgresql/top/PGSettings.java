@@ -45,8 +45,9 @@ public class PGSettings extends Activity implements OnClickListener,
 				PGTop.DEFAULT_REFRESH);
 
 		refreshSpinner = (Spinner) findViewById(R.id.refresh);
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this, R.array.rates, android.R.layout.simple_spinner_item);
+		final ArrayAdapter<CharSequence> adapter = ArrayAdapter
+				.createFromResource(this, R.array.rates,
+						android.R.layout.simple_spinner_item);
 		adapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		refreshSpinner.setAdapter(adapter);

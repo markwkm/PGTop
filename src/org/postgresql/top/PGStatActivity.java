@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class PGStatActivity extends Activity implements Runnable {
+	private MenuInflater inflater;
+
 	private String pgDatabase;
 	private String url;
 	private String pgUser;
@@ -50,6 +52,10 @@ public class PGStatActivity extends Activity implements Runnable {
 	private SharedPreferences preferences;
 	private int refreshRate;
 
+	private Connection conn = null;
+	private Statement st;
+	private ResultSet rs;
+
 	private static final String sql1 = ""
 			+ "SELECT NOW(), "
 			+ "      (SELECT COUNT(*) "
@@ -64,10 +70,6 @@ public class PGStatActivity extends Activity implements Runnable {
 	private static String sql2;
 
 	private void getActivityStats() throws SQLException {
-		Connection conn = null;
-		Statement st;
-		ResultSet rs;
-
 		try {
 			conn = DriverManager.getConnection(url, pgUser, pgPassword);
 			st = conn.createStatement();
@@ -147,7 +149,7 @@ public class PGStatActivity extends Activity implements Runnable {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
+		inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu, menu);
 		return true;
 	}
@@ -162,8 +164,7 @@ public class PGStatActivity extends Activity implements Runnable {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.stop:
-			Intent intent = new Intent();
-			setResult(RESULT_OK, intent);
+			setResult(RESULT_OK, new Intent());
 			finish();
 			return true;
 		default:
