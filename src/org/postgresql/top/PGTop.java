@@ -42,6 +42,9 @@ public class PGTop extends Activity implements OnClickListener {
 	public void onClick(View view) {
 		String selectedItem = (String) connectionSpinner.getSelectedItem();
 
+		if (selectedItem == null)
+			return;
+
 		Pattern pattern = Pattern
 				.compile("(.*):(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
 		Matcher matcher = pattern.matcher(selectedItem);

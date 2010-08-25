@@ -27,6 +27,8 @@ public class PGRemoveDatabase extends Activity implements OnClickListener {
 		switch (view.getId()) {
 		case R.id.remove:
 			String selectedItem = (String) connectionSpinner.getSelectedItem();
+			if (selectedItem == null)
+				return;
 
 			Pattern pattern = Pattern
 					.compile("(.*):(.*)/(.*) \\[(.*)\\] \\((.*)\\)");
