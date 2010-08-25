@@ -69,6 +69,8 @@ public class PGTop extends Activity implements OnClickListener,
 
 	public void onClick(View view) {
 		selectedItem = (String) connectionSpinner.getSelectedItem();
+		if (selectedItem == null)
+			return;
 
 		matcher = pattern1.matcher(selectedItem);
 		if (matcher.find()) {

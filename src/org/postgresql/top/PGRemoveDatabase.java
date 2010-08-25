@@ -37,6 +37,8 @@ public class PGRemoveDatabase extends Activity implements OnClickListener {
 		switch (view.getId()) {
 		case R.id.remove:
 			selectedItem = (String) connectionSpinner.getSelectedItem();
+			if (selectedItem == null)
+				return;
 
 			matcher = pattern1.matcher(selectedItem);
 			if (matcher.find()) {
