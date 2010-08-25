@@ -14,13 +14,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
 
-public class PGTop extends Activity implements OnClickListener {
+public class PGTop extends Activity implements OnClickListener,
+		OnItemSelectedListener {
+	public static final String PREFS_PGTOP = "PGTopPrefs";
 	public static final String PREFS_REFRESH = "RefreshPrefs";
+
+	public static final String KEY_CONNECTION = "ConnectionKey";
 	public static final String KEY_REFRESH = "RefreshKey";
 
 	public static int DEFAULT_REFRESH = 2;
@@ -30,7 +36,7 @@ public class PGTop extends Activity implements OnClickListener {
 	};
 
 	private Spinner connectionSpinner;
-	private ArrayAdapter<CharSequence> spinnerAdapter;
+	private ArrayAdapter<CharSequence> connectionAdapter;
 
 	private String pgHost;
 	private String pgPort;
@@ -38,6 +44,10 @@ public class PGTop extends Activity implements OnClickListener {
 	private String pgUser;
 	private String pgPassword;
 	private int ssl;
+
+	private SharedPreferences preferences;
+	SharedPreferences.Editor editor;
+	private int connectionPosition;
 
 	public void onClick(View view) {
 		String selectedItem = (String) connectionSpinner.getSelectedItem();
@@ -111,8 +121,6 @@ public class PGTop extends Activity implements OnClickListener {
 
 		// Save the database connection variables to be used by StatDisplay
 		// class.
-		SharedPreferences preferences = getSharedPreferences("PGTopPrefs", 0);
-		SharedPreferences.Editor editor = preferences.edit();
 		editor.putString("pgdatabase", pgDatabase);
 		editor.putString("pgurl", url);
 		editor.putString("pguser", pgUser);
@@ -147,10 +155,17 @@ public class PGTop extends Activity implements OnClickListener {
 		final Button databaseButton = (Button) findViewById(R.id.database);
 		databaseButton.setOnClickListener(this);
 
+		preferences = getSharedPreferences("PGTopPrefs", 0);
+		editor = preferences.edit();
+
+		connectionPosition = preferences.getInt(KEY_CONNECTION, 0);
 		connectionSpinner = (Spinner) findViewById(R.id.connection);
 		connectionSpinner.setPrompt("Choose a connection");
-		spinnerAdapter = new ArrayAdapter<CharSequence>(this,
+		connectionAdapter = new ArrayAdapter<CharSequence>(this,
 				android.R.layout.simple_spinner_item);
+		connectionSpinner.setAdapter(connectionAdapter);
+		connectionSpinner.setSelection(connectionPosition);
+		connectionSpinner.setOnItemSelectedListener(this);
 	}
 
 	@Override
@@ -158,6 +173,17 @@ public class PGTop extends Activity implements OnClickListener {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 		return true;
+	}
+
+	public void onItemSelected(AdapterView<?> parent, View view, int position,
+			long id) {
+		connectionPosition = connectionSpinner.getSelectedItemPosition();
+		editor.putInt(KEY_CONNECTION, connectionPosition);
+		editor.commit();
+	}
+
+	public void onNothingSelected(AdapterView<?> parent) {
+		// Nothing to do here, should always be something selected.
 	}
 
 	@Override
@@ -179,6 +205,9 @@ public class PGTop extends Activity implements OnClickListener {
 	protected void onResume() {
 		super.onResume();
 		PGConnectionOpenHelper.populateConnectionSpinner(connectionSpinner,
-				spinnerAdapter, getApplicationContext());
+				connectionAdapter, getApplicationContext());
+
+		connectionPosition = preferences.getInt(KEY_CONNECTION, 0);
+		connectionSpinner.setSelection(connectionPosition);
 	}
 }
