@@ -66,6 +66,7 @@ public class PGStatBgwriter extends Activity implements Runnable {
 
 	private int major, branch;
 
+	private SharedPreferences preferences;
 	private int refreshRate;
 
 	private static final String sql = ""
@@ -124,13 +125,12 @@ public class PGStatBgwriter extends Activity implements Runnable {
 			return;
 		}
 
-		SharedPreferences preferences = getSharedPreferences("PGTopPrefs", 0);
-		pgDatabase = preferences.getString("pgdatabase", "");
-		url = preferences.getString("pgurl", "");
-		pgUser = preferences.getString("pguser", "");
-		pgPassword = preferences.getString("pgpassword", "");
+		preferences = getSharedPreferences(PGTop.PREFS_PGTOP, 0);
+		pgDatabase = preferences.getString(PGTop.KEY_PGDATABASE, "");
+		url = preferences.getString(PGTop.KEY_PGURL, "");
+		pgUser = preferences.getString(PGTop.KEY_PGUSER, "");
+		pgPassword = preferences.getString(PGTop.KEY_PGPASSWORD, "");
 
-		preferences = getSharedPreferences(PGTop.PREFS_REFRESH, 0);
 		refreshRate = preferences.getInt(PGTop.KEY_REFRESH,
 				PGTop.DEFAULT_REFRESH) * 1000;
 

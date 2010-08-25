@@ -14,7 +14,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 public class PGSettings extends Activity implements OnClickListener,
 		OnItemSelectedListener {
-	private SharedPreferences settings;
+	private SharedPreferences preferences;
+	private SharedPreferences.Editor editor;
 	private int refreshRate;
 	private Spinner refreshSpinner;
 
@@ -38,8 +39,10 @@ public class PGSettings extends Activity implements OnClickListener,
 
 		// Restore refresh rate preferences, the position is the same as the
 		// value - 1.
-		settings = getSharedPreferences(PGTop.PREFS_REFRESH, 0);
-		refreshRate = settings.getInt(PGTop.KEY_REFRESH, PGTop.DEFAULT_REFRESH);
+		preferences = getSharedPreferences(PGTop.PREFS_PGTOP, 0);
+		editor = preferences.edit();
+		refreshRate = preferences.getInt(PGTop.KEY_REFRESH,
+				PGTop.DEFAULT_REFRESH);
 
 		refreshSpinner = (Spinner) findViewById(R.id.refresh);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -58,7 +61,6 @@ public class PGSettings extends Activity implements OnClickListener,
 
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
-		SharedPreferences.Editor editor = settings.edit();
 		refreshRate = Integer.parseInt((String) refreshSpinner
 				.getSelectedItem());
 		editor.putInt(PGTop.KEY_REFRESH, refreshRate);

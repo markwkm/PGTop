@@ -24,7 +24,11 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class PGTop extends Activity implements OnClickListener,
 		OnItemSelectedListener {
 	public static final String PREFS_PGTOP = "PGTopPrefs";
-	public static final String PREFS_REFRESH = "RefreshPrefs";
+
+	public static final String KEY_PGDATABASE = "DatabaseKey";
+	public static final String KEY_PGURL = "UrlKey";
+	public static final String KEY_PGUSER = "UserKey";
+	public static final String KEY_PGPASSWORD = "PasswordKey";
 
 	public static final String KEY_CONNECTION = "ConnectionKey";
 	public static final String KEY_REFRESH = "RefreshKey";
@@ -121,10 +125,10 @@ public class PGTop extends Activity implements OnClickListener,
 
 		// Save the database connection variables to be used by StatDisplay
 		// class.
-		editor.putString("pgdatabase", pgDatabase);
-		editor.putString("pgurl", url);
-		editor.putString("pguser", pgUser);
-		editor.putString("pgpassword", pgPassword);
+		editor.putString(KEY_PGDATABASE, pgDatabase);
+		editor.putString(KEY_PGURL, url);
+		editor.putString(KEY_PGUSER, pgUser);
+		editor.putString(KEY_PGPASSWORD, pgPassword);
 		editor.commit();
 
 		Intent myIntent = null;
@@ -155,7 +159,7 @@ public class PGTop extends Activity implements OnClickListener,
 		final Button databaseButton = (Button) findViewById(R.id.database);
 		databaseButton.setOnClickListener(this);
 
-		preferences = getSharedPreferences("PGTopPrefs", 0);
+		preferences = getSharedPreferences(PREFS_PGTOP, 0);
 		editor = preferences.edit();
 
 		connectionPosition = preferences.getInt(KEY_CONNECTION, 0);
