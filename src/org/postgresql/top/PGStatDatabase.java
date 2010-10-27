@@ -2,6 +2,7 @@ package org.postgresql.top;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -76,6 +77,7 @@ public class PGStatDatabase extends Activity implements Runnable {
 
 	private Connection conn = null;
 	private Statement st;
+	private PreparedStatement ps;
 	private ResultSet rs;
 
 	private final Pattern pattern = Pattern.compile("(\\d+)\\.(\\d+).*");
@@ -84,6 +86,33 @@ public class PGStatDatabase extends Activity implements Runnable {
 
 	private static String sql;
 
+	// This should be versions 8.4 and newer.
+	private static String sql84 = ""
+			+ "SELECT NOW(), numbackends, xact_commit, xact_rollback, "
+			+ "          blks_read, blks_hit, tup_returned, tup_fetched, "
+			+ "          tup_inserted, tup_updated, tup_deleted, "
+			+ "          PG_SIZE_PRETTY((blks_read - ?) * setting), "
+			+ "          PG_SIZE_PRETTY((blks_hit - ?) * setting) "
+			+ "FROM (SELECT setting::BIGINT "
+			+ "      FROM pg_settings "
+			+ "      WHERE name = 'block_size') AS pg_settings, "
+			+ "     pg_stat_database "
+			+ "WHERE datname = ?;";
+
+	// This should be all cases older than 8.4.
+	// FIXME: Don't display the data that doesn't exist as oppose to
+	// making zeros.
+	private static String sql83 = ""
+			+ "SELECT NOW(), numbackends, xact_commit, xact_rollback, "
+			+ "          blks_read, blks_hit, 0, 0, 0, 0, 0, "
+			+ "          PG_SIZE_PRETTY((blks_read - ?) * setting), "
+			+ "          PG_SIZE_PRETTY((blks_hit - ?) * setting) "
+			+ "FROM (SELECT setting::BIGINT "
+			+ "      FROM pg_settings "
+			+ "      WHERE name = 'block_size') AS pg_settings, "
+			+ "     pg_stat_database "
+			+ "WHERE datname = ?;";
+
 	SharedPreferences preferences;
 	int refreshRate;
 
@@ -91,8 +120,11 @@ public class PGStatDatabase extends Activity implements Runnable {
 		try {
 			conn = DriverManager.getConnection(url, pgUser, pgPassword);
 
-			st = conn.createStatement();
-			rs = st.executeQuery(sql);
+			ps = conn.prepareStatement(sql);
+			ps.setLong(1, readOld);
+			ps.setLong(2, hitOld);
+			ps.setString(3, pgDatabase);
+			rs = ps.executeQuery();
 			if (rs.next()) {
 				// Save previous values.
 				commitsOld = commits;
@@ -121,7 +153,7 @@ public class PGStatDatabase extends Activity implements Runnable {
 				hitPretty = rs.getString(13);
 			}
 			rs.close();
-			st.close();
+			ps.close();
 		} finally {
 			if (conn != null) {
 				conn.close();
@@ -197,38 +229,9 @@ public class PGStatDatabase extends Activity implements Runnable {
 		}
 
 		if (major >= 9 || (major == 8 && branch >= 4)) {
-			// This should be versions 8.4 and newer.
-			// FIXME: Use named parameters.
-			sql = ""
-					+ "SELECT NOW(), numbackends, xact_commit, xact_rollback, "
-					+ "          blks_read, blks_hit, tup_returned, tup_fetched, "
-					+ "          tup_inserted, tup_updated, tup_deleted, "
-					+ "          PG_SIZE_PRETTY((blks_read - "
-					+ Long.toString(readOld) + ") * setting), "
-					+ "          PG_SIZE_PRETTY((blks_hit - "
-					+ Long.toString(hitOld) + ") * setting) "
-					+ "FROM (SELECT setting::BIGINT "
-					+ "      FROM pg_settings "
-					+ "      WHERE name = 'block_size') AS pg_settings, "
-					+ "     pg_stat_database " + "WHERE datname = '"
-					+ pgDatabase + "';";
+			sql = sql84;
 		} else {
-			// This should be all cases older than 8.4.
-			// FIXME: Use named parameters.
-			// FIXME: Don't display the data that doesn't exist as oppose to
-			// making zeros.
-			sql = ""
-					+ "SELECT NOW(), numbackends, xact_commit, xact_rollback, "
-					+ "          blks_read, blks_hit, 0, 0, 0, 0, 0, "
-					+ "          PG_SIZE_PRETTY((blks_read - "
-					+ Long.toString(readOld) + ") * setting), "
-					+ "          PG_SIZE_PRETTY((blks_hit - "
-					+ Long.toString(hitOld) + ") * setting) "
-					+ "FROM (SELECT setting::BIGINT "
-					+ "      FROM pg_settings "
-					+ "      WHERE name = 'block_size') AS pg_settings, "
-					+ "     pg_stat_database " + "WHERE datname = '"
-					+ pgDatabase + "';";
+			sql = sql83;
 		}
 
 		thread = new Thread(this);

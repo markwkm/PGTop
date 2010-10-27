@@ -2,6 +2,7 @@ package org.postgresql.top;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -54,6 +55,7 @@ public class PGStatActivity extends Activity implements Runnable {
 
 	private Connection conn = null;
 	private Statement st;
+	private PreparedStatement ps;
 	private ResultSet rs;
 
 	private static final String sql1 = ""
@@ -64,10 +66,22 @@ public class PGStatActivity extends Activity implements Runnable {
 			+ "      (SELECT COUNT(*) "
 			+ "       FROM pg_stat_activity "
 			+ "       WHERE current_query = '<IDLE> in transaction') AS idle_transactions, "
-			+ "      (SELECT COUNT(*) " + "       FROM pg_stat_activity "
+			+ "      (SELECT COUNT(*) "
+			+ "       FROM pg_stat_activity "
 			+ "       WHERE waiting IS TRUE) AS waiting;";
 
-	private static String sql2;
+	// Don't show this query if it's the only run running on the system,
+	// and only query for SQL running against the database we're
+	// currently connected to.
+
+	private static String sql2 = ""
+		+ "SELECT NOW() - query_start, current_query "
+		+ "FROM pg_stat_activity " + "WHERE datname = ? "
+		+ "  AND current_query <> '<IDLE>' "
+		+ "  AND current_query <> '<IDLE> in transaction' "
+		+ "  AND procpid <> PG_BACKEND_PID() "
+		+ "ORDER BY 1 DESC "
+		+ "LIMIT 1;";
 
 	private void getActivityStats() throws SQLException {
 		try {
@@ -82,7 +96,9 @@ public class PGStatActivity extends Activity implements Runnable {
 			}
 			rs.close();
 
-			rs = st.executeQuery(sql2);
+			ps = conn.prepareStatement(sql2);
+			ps.setString(1, pgDatabase);
+			rs = ps.executeQuery();
 			if (rs.next()) {
 				queryTimeString = rs.getString(1);
 				currentQueryString = rs.getString(2);
@@ -90,9 +106,9 @@ public class PGStatActivity extends Activity implements Runnable {
 				queryTimeString = "No SQL statements currently running...";
 				currentQueryString = "";
 			}
-			rs.close();
 
-			st.close();
+			rs.close();
+			ps.close();
 		} finally {
 			if (conn != null) {
 				conn.close();
@@ -124,18 +140,6 @@ public class PGStatActivity extends Activity implements Runnable {
 
 		refreshRate = preferences.getInt(PGTop.KEY_REFRESH,
 				PGTop.DEFAULT_REFRESH) * 1000;
-
-		// Don't show this query if it's the only run running on the system,
-		// and only query for SQL running against the database we're
-		// currently connected to.
-
-		// FIXME: Use named parameters.
-		sql2 = "" + "SELECT NOW() - query_start, current_query "
-				+ "FROM pg_stat_activity " + "WHERE datname = '" + pgDatabase
-				+ "' " + "  AND current_query <> '<IDLE>' "
-				+ "  AND current_query <> '<IDLE> in transaction' "
-				+ "  AND procpid <> PG_BACKEND_PID() " + "ORDER BY 1 DESC "
-				+ "LIMIT 1;";
 
 		headerTextView = (TextView) findViewById(R.id.displayheader);
 		idleConnectionsTextView = (TextView) findViewById(R.id.idle_connections);
