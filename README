@@ -1,14 +1,12 @@
 PGTop for Android is a PostgreSQL database statistics monitoring app.
 
 This project was initially started using Eclipse 3.5.2 and r06 of the Android
-SDK.  It was tested uses a PostgreSQL JDBC jar file posted to the PgAndroid
-Google Group by Dave Cramer on June 9, 2010.
-
-It was developed against PostgreSQL 8.4 and should work on the up coming 9.0
-release.  It has been tested against 8.3 and 8.2 to some degree.
+SDK.  It was developed against PostgreSQL 8.4 and should work on the up coming
+9.0 release.  It has been tested against 8.3 and 8.2 to some degree.
 
 When building, the file '.classpath' needs to be modified to include the
-PostgreSQL JDBC jar file that works on the Android platform.  When using
-Eclipse, the jar can be added using the following directions:
+PostgreSQL JDBC jar file.  It needs to be newer than build 801 in order to work
+on the Android platform.  Please note comments on the download page about
+whether JDBC3 or JDBC4 should be used.  The jar file can be downloaded from:
 
-http://developer.android.com/guide/appendix/faq/commontasks.html#addexternallibrary
+http://jdbc.postgresql.org/download.html
